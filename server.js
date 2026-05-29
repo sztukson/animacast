@@ -120,68 +120,27 @@ app.get('/auth/google',
 
 app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/login?error=1' }),
-  (req, res) => res.redirect('/admin')
+  (req, res) => {
+    const dest = req.session.returnTo || '/';
+    delete req.session.returnTo;
+    res.redirect(dest);
+  }
 );
 
 app.get('/logout', (req, res) => {
   req.logout(() => res.redirect('/login'));
 });
 
-// ── Tymczasowa ochrona hasłem ─────────────────────────────────────
-// Żeby wyłączyć: usuń zmienną SITE_PASSWORD w Railway — gotowe.
-
-const SITE_PASSWORD = process.env.SITE_PASSWORD;
+// ── Tymczasowa ochrona Google OAuth ──────────────────────────────
+// Żeby wyłączyć: ustaw SITE_PROTECTED=false w Railway — gotowe.
 
 function siteGuard(req, res, next) {
-  if (!SITE_PASSWORD) return next();
-  if (req.path === '/site-login' || req.path.startsWith('/auth/') || req.path.startsWith('/admin')) return next();
-  if (req.session.siteAuthed) return next();
-  res.redirect('/site-login');
+  if (process.env.SITE_PROTECTED === 'false') return next();
+  if (req.path.startsWith('/auth/') || req.path.startsWith('/login')) return next();
+  if (req.isAuthenticated()) return next();
+  req.session.returnTo = req.originalUrl;
+  res.redirect('/login');
 }
-
-app.get('/site-login', (req, res) => {
-  const error = req.query.error;
-  res.send(`<!DOCTYPE html>
-<html lang="pl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AnimaCast — dostęp</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0b;color:#e2e8f0;min-height:100vh;display:flex;align-items:center;justify-content:center}
-.card{background:#111;border:1px solid #1e1e1e;border-radius:16px;padding:48px 40px;width:100%;max-width:360px;text-align:center}
-.logo{font-size:24px;font-weight:800;margin-bottom:6px}.logo span{color:#c8903a}
-p{font-size:13px;color:#555;margin-bottom:28px}
-input{width:100%;padding:12px 14px;background:#0a0a0b;border:1px solid #222;border-radius:10px;color:#e2e8f0;font-size:14px;margin-bottom:12px;outline:none}
-input:focus{border-color:#c8903a}
-button{width:100%;padding:13px;background:#c8903a;color:#000;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer}
-button:hover{background:#d4993f}
-.error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#fca5a5;border-radius:8px;padding:10px;font-size:12px;margin-bottom:16px}
-</style>
-</head>
-<body>
-<div class="card">
-  <div class="logo">Anima<span>Cast</span></div>
-  <p>Strona w przygotowaniu</p>
-  ${error ? '<div class="error">Nieprawidłowe hasło</div>' : ''}
-  <form method="POST" action="/site-login">
-    <input type="password" name="password" placeholder="Hasło dostępu" autofocus>
-    <button type="submit">Wejdź →</button>
-  </form>
-</div>
-</body>
-</html>`);
-});
-
-app.post('/site-login', express.urlencoded({ extended: false }), (req, res) => {
-  if (req.body.password === SITE_PASSWORD) {
-    req.session.siteAuthed = true;
-    res.redirect('/');
-  } else {
-    res.redirect('/site-login?error=1');
-  }
-});
 
 app.use(siteGuard);
 
