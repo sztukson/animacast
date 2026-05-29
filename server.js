@@ -131,18 +131,25 @@ app.get('/logout', (req, res) => {
   req.logout(() => res.redirect('/login'));
 });
 
-// ── Tymczasowa ochrona Google OAuth ──────────────────────────────
-// Żeby wyłączyć: ustaw SITE_PROTECTED=false w Railway — gotowe.
+// ── Tymczasowa ochrona HTTP Basic Auth ───────────────────────────
+// Żeby wyłączyć: usuń SITE_PASSWORD z Railway Variables — gotowe.
 
-function siteGuard(req, res, next) {
-  if (process.env.SITE_PROTECTED === 'false') return next();
-  if (req.path.startsWith('/auth/') || req.path.startsWith('/login')) return next();
-  if (req.isAuthenticated()) return next();
-  req.session.returnTo = req.originalUrl;
-  res.redirect('/login');
-}
+app.use((req, res, next) => {
+  const pwd = process.env.SITE_PASSWORD;
+  if (!pwd) return next();
+  if (req.path.startsWith('/auth/') || req.path.startsWith('/admin') || req.path.startsWith('/login')) return next();
 
-app.use(siteGuard);
+  const auth = req.headers['authorization'];
+  if (auth && auth.startsWith('Basic ')) {
+    const decoded = Buffer.from(auth.slice(6), 'base64').toString();
+    const colon = decoded.indexOf(':');
+    const pass = decoded.slice(colon + 1);
+    if (pass === pwd) return next();
+  }
+
+  res.setHeader('WWW-Authenticate', 'Basic realm="AnimaCast — strona w przygotowaniu"');
+  res.status(401).send('Wymagane hasło dostępu.');
+});
 
 // ── Public API ──────────────────────────────────────────────────────
 
