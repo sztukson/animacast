@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AnimaCast — Panel Admina</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0b;color:#e2e8f0;min-height:100vh}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;background:#111;border-bottom:1px solid #1e1e1e;position:sticky;top:0;z-index:100}
+.logo{font-size:20px;font-weight:800;color:#fff}.logo span{color:#c8903a}
+.logout{background:transparent;border:1px solid #333;color:#888;padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;text-decoration:none}
+.logout:hover{border-color:#555;color:#ccc}
+.main{padding:28px;max-width:1200px;margin:0 auto}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.stat-card{background:#111;border:1px solid #1e1e1e;border-radius:12px;padding:20px;text-align:center}
+.stat-n{font-size:32px;font-weight:800;margin-bottom:4px}
+.stat-l{font-size:12px;color:#666;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.stat-nowe .stat-n{color:#60a5fa}
+.stat-wr .stat-n{color:#fbbf24}
+.stat-zak .stat-n{color:#34d399}
+.stat-odr .stat-n{color:#f87171}
+.toolbar{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.toolbar h2{font-size:18px;font-weight:700;margin-right:auto}
+.filter-btn{background:#111;border:1px solid #222;color:#888;padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;transition:.15s}
+.filter-btn:hover,.filter-btn.active{background:#1e1e1e;border-color:#c8903a;color:#c8903a}
+table{width:100%;border-collapse:collapse;background:#111;border-radius:12px;overflow:hidden;border:1px solid #1e1e1e}
+thead{background:#0f0f0f}
+th{padding:12px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#555;white-space:nowrap}
+td{padding:12px 16px;font-size:13px;border-top:1px solid #1a1a1a;vertical-align:top}
+tr:hover td{background:#0f0f0f}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
+.badge-nowe{background:rgba(96,165,250,.12);color:#60a5fa}
+.badge-wr{background:rgba(251,191,36,.12);color:#fbbf24}
+.badge-zak{background:rgba(52,211,153,.12);color:#34d399}
+.badge-odr{background:rgba(248,113,113,.12);color:#f87171}
+.status-sel{background:#0a0a0b;border:1px solid #222;color:#e2e8f0;border-radius:6px;padding:5px 8px;font-size:12px;cursor:pointer;outline:none}
+.status-sel:focus{border-color:#c8903a}
+.animal-name{font-weight:700;color:#fff}
+.animal-sp{font-size:11px;color:#555;margin-top:2px}
+.contact-name{font-weight:600;color:#e2e8f0}
+.contact-sub{font-size:11px;color:#555;margin-top:2px}
+.date-range{font-size:12px;color:#888}
+.notes-cell{max-width:200px;font-size:12px;color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.empty{text-align:center;padding:60px;color:#444}
+.empty-icon{font-size:48px;margin-bottom:12px}
+@media(max-width:768px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .main{padding:16px}
+  th:nth-child(5),td:nth-child(5){display:none}
+  .topbar{padding:12px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">Anima<span>Cast</span> <span style="font-size:12px;color:#555;font-weight:400;margin-left:8px">Admin</span></div>
+  <div style="display:flex;gap:12px;align-items:center">
+    <a href="/" style="color:#555;font-size:12px;text-decoration:none">← Wróć do strony</a>
+    <a href="/logout" class="logout">Wyloguj</a>
+  </div>
+</div>
+
+<div class="main">
+  <div class="stats">
+    <div class="stat-card stat-nowe"><div class="stat-n" id="s-nowe">—</div><div class="stat-l">Nowe</div></div>
+    <div class="stat-card stat-wr"><div class="stat-n" id="s-wr">—</div><div class="stat-l">W realizacji</div></div>
+    <div class="stat-card stat-zak"><div class="stat-n" id="s-zak">—</div><div class="stat-l">Zakończone</div></div>
+    <div class="stat-card stat-odr"><div class="stat-n" id="s-odr">—</div><div class="stat-l">Odrzucone</div></div>
+  </div>
+
+  <div class="toolbar">
+    <h2>Zapytania producentów</h2>
+    <button class="filter-btn active" data-f="all" onclick="setFilter('all',this)">Wszystkie</button>
+    <button class="filter-btn" data-f="nowe" onclick="setFilter('nowe',this)">Nowe</button>
+    <button class="filter-btn" data-f="w_realizacji" onclick="setFilter('w_realizacji',this)">W realizacji</button>
+    <button class="filter-btn" data-f="zakonczone" onclick="setFilter('zakonczone',this)">Zakończone</button>
+    <button class="filter-btn" data-f="odrzucone" onclick="setFilter('odrzucone',this)">Odrzucone</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Zwierzę</th>
+        <th>Kontakt</th>
+        <th>Termin</th>
+        <th>Typ produkcji</th>
+        <th>Uwagi</th>
+        <th>Status</th>
+        <th>Data zapytania</th>
+      </tr>
+    </thead>
+    <tbody id="tbody">
+      <tr><td colspan="8" class="empty"><div class="empty-icon">⏳</div><div>Ładowanie…</div></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+let currentFilter = 'all';
+
+const BADGE = {
+  nowe: '<span class="badge badge-nowe">Nowe</span>',
+  w_realizacji: '<span class="badge badge-wr">W realizacji</span>',
+  zakonczone: '<span class="badge badge-zak">Zakończone</span>',
+  odrzucone: '<span class="badge badge-odr">Odrzucone</span>',
+};
+
+const LABEL = {nowe:'Nowe',w_realizacji:'W realizacji',zakonczone:'Zakończone',odrzucone:'Odrzucone'};
+
+function fmt(d){
+  if(!d) return '—';
+  return new Date(d).toLocaleDateString('pl-PL',{day:'2-digit',month:'2-digit',year:'numeric'});
+}
+
+function fmtTs(d){
+  if(!d) return '—';
+  const dt=new Date(d);
+  return dt.toLocaleDateString('pl-PL',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+dt.toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'});
+}
+
+async function loadStats(){
+  const r=await fetch('/api/admin/stats');
+  if(!r.ok) return;
+  const d=await r.json();
+  document.getElementById('s-nowe').textContent=d.nowe||0;
+  document.getElementById('s-wr').textContent=d.w_realizacji||0;
+  document.getElementById('s-zak').textContent=d.zakonczone||0;
+  document.getElementById('s-odr').textContent=d.odrzucone||0;
+}
+
+async function loadInquiries(){
+  const url='/api/admin/inquiries'+(currentFilter!=='all'?'?status='+currentFilter:'');
+  const r=await fetch(url);
+  if(!r.ok){document.getElementById('tbody').innerHTML='<tr><td colspan="8" class="empty"><div>Błąd ładowania</div></td></tr>';return;}
+  const rows=await r.json();
+  if(!rows.length){
+    document.getElementById('tbody').innerHTML='<tr><td colspan="8" class="empty"><div class="empty-icon">📭</div><div>Brak zapytań</div></td></tr>';
+    return;
+  }
+  document.getElementById('tbody').innerHTML=rows.map(r=>`
+    <tr>
+      <td style="color:#444;font-size:12px">#${r.id}</td>
+      <td>
+        <div class="animal-name">${esc(r.animal_name)}</div>
+        <div class="animal-sp">${esc(r.animal_species||'')} ${r.animal_location?'· '+esc(r.animal_location):''}</div>
+        ${r.price_day?`<div style="font-size:11px;color:#c8903a;margin-top:2px">${esc(r.price_day)}/dzień</div>`:''}
+      </td>
+      <td>
+        <div class="contact-name">${esc(r.contact_name)}</div>
+        <div class="contact-sub">${esc(r.contact_email)}</div>
+        ${r.contact_phone?`<div class="contact-sub">${esc(r.contact_phone)}</div>`:''}
+      </td>
+      <td>
+        <div class="date-range">${fmt(r.date_from)} – ${fmt(r.date_to)}</div>
+      </td>
+      <td style="font-size:12px;color:#888">${esc(r.production_type||'—')}</td>
+      <td><div class="notes-cell" title="${esc(r.notes||'')}">${esc(r.notes||'—')}</div></td>
+      <td>
+        <select class="status-sel" onchange="updateStatus(${r.id},this.value)">
+          ${['nowe','w_realizacji','zakonczone','odrzucone'].map(s=>`<option value="${s}"${r.status===s?' selected':''}>${LABEL[s]}</option>`).join('')}
+        </select>
+      </td>
+      <td style="font-size:12px;color:#555;white-space:nowrap">${fmtTs(r.created_at)}</td>
+    </tr>
+  `).join('');
+}
+
+function esc(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+async function updateStatus(id,status){
+  const r=await fetch(`/api/admin/inquiries/${id}`,{
+    method:'PATCH',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({status}),
+  });
+  if(r.ok) loadStats();
+}
+
+function setFilter(f,btn){
+  currentFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  loadInquiries();
+}
+
+loadStats();
+loadInquiries();
+setInterval(()=>{loadStats();loadInquiries();},30000);
+</script>
+</body>
+</html>

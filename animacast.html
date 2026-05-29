@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AnimaCast — Agencja Zwierząt do Produkcji</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080910;--bg2:#0e1018;--card:#12141f;--card-h:#191c2e;
+  --gold:#c8903a;--gold-l:#e8a84a;--gold-glow:rgba(200,144,58,.12);
+  --text:#e2e2ee;--muted:#7878a0;--border:rgba(255,255,255,.06);
+  --ok:#2ed573;--r:12px
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.5;overflow-x:hidden}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:66px;background:rgba(8,9,16,.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.logo{font-size:20px;font-weight:800;letter-spacing:3px;color:var(--gold);text-transform:uppercase;cursor:pointer}
+.logo span{color:var(--text)}
+nav ul{list-style:none;display:flex;gap:28px}
+nav ul a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;cursor:pointer;transition:color .2s}
+nav ul a:hover{color:var(--text)}
+.nav-cta{display:flex;gap:10px;align-items:center}
+.fav-btn-nav{position:relative;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text);padding:8px 16px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit}
+.fav-btn-nav:hover{border-color:rgba(255,100,100,.4);color:#ff6b6b}
+.fav-btn-nav.on{border-color:rgba(255,100,100,.5);color:#ff6b6b;background:rgba(255,100,100,.08)}
+.fav-count{position:absolute;top:-6px;right:-6px;background:#ff6b6b;color:#fff;font-size:10px;font-weight:800;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;display:none}
+.btn{padding:9px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .2s;font-family:inherit}
+.btn-o{background:transparent;border:1px solid var(--border);color:var(--text)}
+.btn-o:hover{border-color:rgba(255,255,255,.2)}
+.btn-g{background:var(--gold);color:#080910}
+.btn-g:hover{background:var(--gold-l)}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 48px 80px;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 38%,rgba(200,144,58,.07) 0%,transparent 60%)}
+.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(200,144,58,.1);border:1px solid rgba(200,144,58,.28);color:var(--gold-l);padding:5px 14px;border-radius:100px;font-size:12px;font-weight:700;letter-spacing:.5px;margin-bottom:28px}
+h1{font-size:clamp(34px,5vw,68px);font-weight:800;line-height:1.05;letter-spacing:-2px;margin-bottom:18px}
+h1 .g{color:var(--gold-l)}
+.hero-sub{color:var(--muted);font-size:17px;max-width:540px;margin-bottom:44px;line-height:1.7}
+
+/* SEARCH BOX */
+.search-box{background:var(--card);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:8px;display:flex;width:100%;max-width:820px;align-items:stretch}
+.sf{flex:1;display:flex;flex-direction:column;padding:8px 16px;min-width:0}
+.sf label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:3px}
+.sf input,.sf select{background:none;border:none;color:var(--text);font-size:14px;font-weight:500;outline:none;width:100%;font-family:inherit}
+.sf input::placeholder{color:var(--muted)}
+.sf select option{background:#1a1d2e}
+.sdiv{width:1px;background:var(--border);margin:8px 0;flex-shrink:0}
+.search-btn{background:var(--gold);color:#080910;border:none;border-radius:10px;padding:14px 24px;font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap;margin:4px;transition:background .2s}
+.search-btn:hover{background:var(--gold-l)}
+
+/* STATS */
+.stats{display:flex;gap:48px;margin-top:52px;justify-content:center}
+.stat-n{font-size:30px;font-weight:800;color:var(--gold-l)}
+.stat-l{font-size:12px;color:var(--muted);margin-top:2px;text-align:center}
+
+/* SECTION */
+.sec{padding:72px 48px}
+.sec-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;gap:16px;flex-wrap:wrap}
+.sec-title{font-size:26px;font-weight:700;letter-spacing:-.5px}
+.sec-link{color:var(--gold);text-decoration:none;font-size:13px;font-weight:700;white-space:nowrap}
+.res-count{color:var(--muted);font-size:13px}
+
+/* CATS */
+.cats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.cat{display:flex;align-items:center;gap:6px;padding:8px 18px;border-radius:100px;border:1px solid var(--border);background:var(--card);color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;user-select:none}
+.cat:hover,.cat.on{border-color:var(--gold);color:var(--gold-l);background:var(--gold-glow)}
+
+/* FILTER BAR */
+.fbar{display:flex;gap:10px;align-items:center;margin-bottom:24px;flex-wrap:wrap}
+.fsel{background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;font-size:13px;font-family:inherit;cursor:pointer;outline:none;transition:border-color .2s}
+.fsel:focus{border-color:var(--gold)}
+.fsel option{background:#1a1d2e}
+.ftag{display:flex;align-items:center;gap:6px;background:var(--gold-glow);border:1px solid rgba(200,144,58,.3);color:var(--gold-l);padding:7px 12px;border-radius:100px;font-size:12px;font-weight:700;cursor:pointer;user-select:none;transition:all .2s}
+.ftag:hover{background:rgba(200,144,58,.18)}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+
+/* CARD */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:all .25s;position:relative}
+.card:hover{border-color:rgba(200,144,58,.3);background:var(--card-h);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.4)}
+.card-img-wrap{width:100%;height:210px;position:relative;overflow:hidden;background:linear-gradient(135deg,#1a1d2e,#1e2338)}
+.card-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
+.card:hover .card-img-wrap img{transform:scale(1.04)}
+.card-img-emoji{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:72px}
+.card-fav{position:absolute;top:10px;right:10px;z-index:2;background:rgba(0,0,0,.5);border:none;border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all .2s;backdrop-filter:blur(4px)}
+.card-fav:hover{background:rgba(255,100,100,.25);transform:scale(1.1)}
+.card-fav.on{background:rgba(255,100,100,.3)}
+.card-avail-badge{position:absolute;top:10px;left:10px;z-index:2;display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);padding:4px 10px;border-radius:100px;color:var(--ok)}
+.card-avail-badge.busy{color:#ff8c42}
+.dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
+.card-body{padding:14px}
+.ct{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px}
+.cn{font-size:17px;font-weight:700}
+.cs{color:var(--muted);font-size:12px;margin-bottom:10px}
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.tag{background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--muted);font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px}
+.tag.gt{background:var(--gold-glow);border-color:rgba(200,144,58,.3);color:var(--gold-l)}
+.cf{display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid var(--border)}
+.loc{color:var(--muted);font-size:12px}
+.price{font-weight:700;font-size:15px}
+.price s{color:var(--muted);font-size:11px;font-weight:400}
+
+/* AI PICK HIGHLIGHT */
+.card.ai-pick{border-color:rgba(200,144,58,.55);background:linear-gradient(180deg,rgba(200,144,58,.06),var(--card));box-shadow:0 0 24px rgba(200,144,58,.12)}
+.ai-pick-bar{background:linear-gradient(90deg,rgba(200,144,58,.2),transparent);border-bottom:1px solid rgba(200,144,58,.2);padding:6px 14px;font-size:10px;font-weight:800;color:var(--gold-l);letter-spacing:.8px;text-transform:uppercase;display:flex;align-items:center;gap:5px}
+.card.dim{opacity:.4;filter:grayscale(.3)}
+.card.dim:hover{opacity:.7}
+.ai-sep{grid-column:1/-1;display:flex;align-items:center;gap:12px;color:var(--muted);font-size:12px;font-weight:700;margin:12px 0 4px;text-transform:uppercase;letter-spacing:.8px}
+.ai-sep::before,.ai-sep::after{content:'';flex:1;height:1px;background:var(--border)}
+/* ANIMASCORE */
+.score-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.score-num{font-size:16px;font-weight:800;min-width:30px}
+.score-track{flex:1;height:4px;background:rgba(255,255,255,.08);border-radius:100px;overflow:hidden}
+.score-fill{height:100%;border-radius:100px;transition:width .5s}
+.s-hi{background:var(--ok)}
+.s-mid{background:var(--gold)}
+.s-lo{background:#ff8c42}
+.badge-pro{display:inline-flex;align-items:center;gap:3px;background:rgba(46,213,115,.1);border:1px solid rgba(46,213,115,.28);color:var(--ok);padding:2px 8px;border-radius:100px;font-size:10px;font-weight:800;white-space:nowrap}
+.badge-std{display:inline-flex;align-items:center;gap:3px;background:var(--gold-glow);border:1px solid rgba(200,144,58,.28);color:var(--gold-l);padding:2px 8px;border-radius:100px;font-size:10px;font-weight:800;white-space:nowrap}
+.badge-pvt{display:inline-flex;align-items:center;gap:3px;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--muted);padding:2px 8px;border-radius:100px;font-size:10px;font-weight:700;white-space:nowrap}
+/* AI SEARCH */
+.ai-panel{background:linear-gradient(135deg,rgba(200,144,58,.06),rgba(120,80,200,.06));border:1px solid rgba(200,144,58,.2);border-radius:16px;padding:20px 24px;margin-bottom:24px;position:relative}
+.ai-panel-top{display:flex;gap:10px;align-items:center}
+.ai-input{flex:1;background:var(--bg);border:1px solid rgba(255,255,255,.09);border-radius:10px;color:var(--text);font-size:14px;padding:12px 16px;outline:none;font-family:inherit;transition:border-color .2s}
+.ai-input:focus{border-color:var(--gold)}
+.ai-input::placeholder{color:var(--muted)}
+.ai-go{background:var(--gold);color:#080910;border:none;border-radius:10px;padding:12px 20px;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;transition:background .2s;font-family:inherit;display:flex;align-items:center;gap:6px}
+.ai-go:hover{background:var(--gold-l)}
+.ai-go.loading{background:rgba(200,144,58,.3);color:var(--gold-l);pointer-events:none}
+.ai-result{margin-top:14px;padding:12px 16px;background:rgba(0,0,0,.3);border-radius:10px;font-size:13px;line-height:1.7;border-left:3px solid var(--gold);display:none}
+.ai-result.show{display:block}
+.ai-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--gold);margin-bottom:2px}
+.ai-clear{margin-top:10px;background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;font-family:inherit;padding:0;text-decoration:underline}
+.ai-clear:hover{color:var(--text)}
+.ai-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(120,80,200,.12);border:1px solid rgba(120,80,200,.25);color:#b09ae0;padding:3px 10px;border-radius:100px;font-size:10px;font-weight:700;letter-spacing:.5px}
+/* SCROLL REVEAL */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .5s,transform .5s}
+.reveal.vis{opacity:1;transform:none}
+
+/* STEPS */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.step{text-align:center;padding:24px 18px;background:var(--card);border:1px solid var(--border);border-radius:var(--r)}
+.step-n{width:44px;height:44px;border-radius:50%;background:var(--gold-glow);border:1px solid rgba(200,144,58,.3);color:var(--gold-l);font-size:18px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+.step-t{font-size:15px;font-weight:700;margin-bottom:8px}
+.step-d{color:var(--muted);font-size:13px;line-height:1.6}
+
+/* INTL */
+.intl{background:linear-gradient(135deg,rgba(200,144,58,.07),rgba(200,144,58,.02));border:1px solid rgba(200,144,58,.2);border-radius:20px;padding:48px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.intl-t{font-size:30px;font-weight:800;letter-spacing:-1px;margin-bottom:12px}
+.intl-d{color:var(--muted);font-size:15px;line-height:1.7;margin-bottom:20px}
+.checks{display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
+.check{color:var(--muted);font-size:13px;display:flex;gap:8px;align-items:flex-start}
+.ck{color:var(--ok);flex-shrink:0;font-weight:800}
+.cpills{display:flex;gap:8px;flex-wrap:wrap}
+.cpill{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);padding:7px 14px;border-radius:100px;font-size:13px}
+.ex-box{margin-top:20px;padding:18px;background:rgba(255,255,255,.03);border-radius:12px;border:1px solid var(--border);font-size:13px;color:var(--muted);line-height:2}
+
+/* PRICING */
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.pc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:28px;display:flex;flex-direction:column}
+.pc.hot{border-color:var(--gold);background:linear-gradient(160deg,rgba(200,144,58,.06),var(--card))}
+.pbadge{display:inline-block;background:var(--gold);color:#080910;font-size:10px;font-weight:800;padding:3px 10px;border-radius:100px;margin-bottom:10px;letter-spacing:.5px}
+.pname{font-size:18px;font-weight:800}
+.pprice{font-size:34px;font-weight:800;margin:14px 0 3px}
+.pprice s{font-size:15px;font-weight:400;color:var(--muted)}
+.pcomm{font-size:13px;color:var(--gold-l);font-weight:700;margin-bottom:6px}
+.pdesc{color:var(--muted);font-size:12px;margin-bottom:20px;line-height:1.5}
+.pf{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:22px;flex:1}
+.pf li{font-size:13px;color:var(--muted);display:flex;gap:7px;align-items:flex-start}
+.pf li::before{content:'✓';color:var(--ok);font-weight:800;flex-shrink:0}
+.pf li.x::before{content:'×';color:rgba(255,255,255,.15)}
+.pf li.x{opacity:.4}
+.pbtn{width:100%;padding:11px;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;transition:all .2s;border:none}
+
+/* MODAL */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+.mo.on{display:flex}
+.modal{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:20px;width:100%;max-width:980px;max-height:92vh;overflow-y:auto;position:relative}
+.mh{position:sticky;top:0;background:var(--bg2);padding:18px 26px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;z-index:10}
+.mclose{background:rgba(255,255,255,.06);border:none;color:var(--text);width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.mclose:hover{background:rgba(255,255,255,.14)}
+.mb{padding:26px}
+.adg{display:grid;grid-template-columns:1fr 360px;gap:28px}
+
+/* GALLERY */
+.gal-main{width:100%;border-radius:12px;aspect-ratio:16/10;overflow:hidden;background:linear-gradient(135deg,#1a1d2e,#1e2338);position:relative}
+.gal-main img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .3s}
+.gal-emoji{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:96px;pointer-events:none}
+.thumbs{display:flex;gap:8px;margin-top:8px}
+.thumb{width:72px;height:54px;flex-shrink:0;border-radius:8px;overflow:hidden;border:2px solid transparent;cursor:pointer;transition:border-color .2s;background:linear-gradient(135deg,#1a1d2e,#252840);position:relative}
+.thumb:hover{border-color:rgba(200,144,58,.5)}
+.thumb.on{border-color:var(--gold)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb-emoji{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:22px}
+
+/* DETAIL */
+.dname{font-size:28px;font-weight:800;letter-spacing:-1px;margin-bottom:4px}
+.dsp{color:var(--muted);font-size:15px;margin-bottom:16px}
+.drow{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}
+.dlabel{color:var(--muted);font-size:12px}
+.dval{font-size:13px;font-weight:700}
+.certs{display:flex;flex-direction:column;gap:7px;margin:18px 0}
+.cert{display:flex;align-items:center;gap:9px;font-size:13px}
+.ci{width:18px;height:18px;border-radius:50%;background:rgba(46,213,115,.12);color:var(--ok);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0}
+
+/* BOOKING PANEL */
+.bpanel{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px}
+.bprice{font-size:26px;font-weight:800;margin-bottom:3px}
+.bprice s{color:var(--muted);font-size:14px;font-weight:400}
+.bnote{color:var(--muted);font-size:11px;margin-bottom:18px}
+.price-calc{background:var(--gold-glow);border:1px solid rgba(200,144,58,.25);border-radius:10px;padding:12px 14px;margin-bottom:14px;display:none}
+.price-calc.show{display:block}
+.pc-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}
+.pc-total{display:flex;justify-content:space-between;font-size:15px;font-weight:800;padding-top:8px;border-top:1px solid rgba(200,144,58,.2);margin-top:4px;color:var(--gold-l)}
+.ff{margin-bottom:13px}
+.ff label{display:block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:5px}
+.ff input,.ff select,.ff textarea{width:100%;background:var(--bg);border:1px solid rgba(255,255,255,.07);border-radius:8px;color:var(--text);font-size:13px;padding:9px 12px;outline:none;font-family:inherit;transition:border-color .2s}
+.ff input:focus,.ff select:focus,.ff textarea:focus{border-color:var(--gold)}
+.ff select option{background:#1a1d2e}
+.ff textarea{resize:vertical;min-height:72px}
+.bsub{width:100%;background:var(--gold);color:#080910;border:none;border-radius:9px;padding:13px;font-size:14px;font-weight:800;cursor:pointer;margin-top:3px;transition:background .2s;font-family:inherit}
+.bsub:hover{background:var(--gold-l)}
+.bmini{color:var(--muted);font-size:11px;text-align:center;margin-top:8px;line-height:1.5}
+.incl{margin-top:14px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}
+.incl h4{font-size:12px;font-weight:800;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+.incl-row{display:flex;gap:7px;font-size:12px;color:var(--muted);margin-bottom:6px;align-items:flex-start}
+
+/* SUCCESS MODAL */
+.success-modal{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:20px;width:100%;max-width:460px;padding:44px 36px;text-align:center}
+
+/* TOAST */
+.toast-wrap{position:fixed;bottom:24px;right:24px;z-index:999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{background:#1e2135;border:1px solid rgba(255,255,255,.1);color:var(--text);padding:12px 18px;border-radius:10px;font-size:13px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.4);transform:translateX(120%);transition:transform .3s;pointer-events:auto;display:flex;align-items:center;gap:8px;max-width:260px}
+.toast.show{transform:none}
+.toast.fav{border-color:rgba(255,100,100,.3)}
+.toast.ok{border-color:rgba(46,213,115,.3)}
+
+/* FOOTER */
+footer{padding:44px 48px;border-top:1px solid var(--border);display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:36px}
+.fb p{color:var(--muted);font-size:13px;line-height:1.6;margin-top:10px}
+footer h4{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:14px}
+footer ul{list-style:none;display:flex;flex-direction:column;gap:9px}
+footer ul a{color:var(--muted);text-decoration:none;font-size:13px;transition:color .2s}
+footer ul a:hover{color:var(--text)}
+.fc{color:var(--muted);font-size:12px;margin-top:36px;padding-top:20px;border-top:1px solid var(--border);text-align:center;grid-column:1/-1}
+
+/* PRODUCER COMPARISON TABLE */
+.vs-wrap{margin-top:52px}
+.vs-title{font-size:20px;font-weight:800;text-align:center;margin-bottom:6px}
+.vs-sub{color:var(--muted);font-size:14px;text-align:center;margin-bottom:30px}
+.vs-table{width:100%;border-radius:14px;overflow:hidden;border:1px solid var(--border)}
+.vs-head{display:grid;grid-template-columns:2fr 1fr 1fr}
+.vs-head>div{padding:13px 20px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);border-bottom:1px solid var(--border)}
+.vs-head>.hlh{background:rgba(200,144,58,.07);color:var(--gold-l);border-bottom-color:rgba(200,144,58,.25)}
+.vs-row{display:grid;grid-template-columns:2fr 1fr 1fr;border-bottom:1px solid var(--border)}
+.vs-row:last-child{border-bottom:none}
+.vs-row:hover{background:rgba(255,255,255,.014)}
+.vs-row>div{padding:13px 20px;font-size:13px;display:flex;align-items:center;gap:8px}
+.vs-row>.hlc{background:rgba(200,144,58,.04)}
+.vs-ok{color:var(--ok);font-weight:800;font-size:15px;flex-shrink:0}
+.vs-no{color:rgba(255,255,255,.15);font-size:15px;flex-shrink:0}
+.vs-feat{color:var(--text)}
+.vs-feat span{color:var(--muted);font-size:11px;display:block;margin-top:1px}
+.risk-box{margin-top:28px;background:rgba(255,140,66,.06);border:1px solid rgba(255,140,66,.2);border-radius:14px;padding:20px 24px;display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start}
+.risk-icon{font-size:28px}
+.risk-title{font-size:14px;font-weight:800;margin-bottom:5px}
+.risk-desc{color:var(--muted);font-size:13px;line-height:1.65}
+
+@media(max-width:900px){
+  nav ul{display:none}
+  nav{padding:0 20px}
+  .hero{padding:100px 20px 60px}
+  .search-box{flex-direction:column}
+  .sdiv{width:100%;height:1px;margin:0}
+  .sec{padding:48px 20px}
+  .grid{grid-template-columns:repeat(2,1fr)}
+  .adg{grid-template-columns:1fr}
+  .steps{grid-template-columns:repeat(2,1fr)}
+  .pgrid{grid-template-columns:1fr}
+  .intl{grid-template-columns:1fr}
+  footer{grid-template-columns:1fr 1fr}
+  .stats{gap:24px;flex-wrap:wrap;justify-content:center}
+}
+@media(max-width:520px){
+  .grid{grid-template-columns:1fr}
+  footer{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo" onclick="scrollTo({top:0,behavior:'smooth'})">Anima<span>Cast</span></div>
+  <ul>
+    <li><a onclick="go('browse')">Przeglądaj</a></li>
+    <li><a onclick="go('intl')">Zagranica</a></li>
+    <li><a onclick="go('how')">Jak działa</a></li>
+    <li><a onclick="go('owners')">Dla właścicieli</a></li>
+    <li><a onclick="go('producers')" style="color:var(--gold-l)">Dla producentów</a></li>
+  </ul>
+  <div class="nav-cta">
+    <button class="fav-btn-nav" id="fav-nav-btn" onclick="toggleFavFilter()">♡ Ulubione <span class="fav-count" id="fav-count">0</span></button>
+    <button class="btn btn-o">Zaloguj się</button>
+    <button class="btn btn-g" onclick="go('owners')">Dodaj zwierzę +</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="s-home">
+  <div class="hero-bg"></div>
+  <div class="badge">🎬 Pierwsza platforma zwierząt do produkcji w Polsce</div>
+  <h1>Profesjonalne zwierzęta<br>do każdej <span class="g">produkcji</span></h1>
+  <p class="hero-sub">Filmy, reklamy, sesje foto — ponad 340 zwierząt z Polski i Europy. Każde zwierzę z potwierdzonym OC właściciela, certyfikatem treserskim i dokumentacją weterynaryjną.</p>
+  <div class="search-box">
+    <div class="sf">
+      <label>Gatunek lub imię</label>
+      <input id="sq" type="text" placeholder="np. Lew, Owczarek, Koń…" oninput="render()">
+    </div>
+    <div class="sdiv"></div>
+    <div class="sf">
+      <label>Kraj</label>
+      <select id="sc" onchange="document.getElementById('fcountry').value=this.value;render()">
+        <option value="">Cała Europa</option>
+        <option value="PL">🇵🇱 Polska</option>
+        <option value="CZ">🇨🇿 Czechy</option>
+        <option value="AT">🇦🇹 Austria</option>
+        <option value="DE">🇩🇪 Niemcy</option>
+        <option value="SK">🇸🇰 Słowacja</option>
+      </select>
+    </div>
+    <div class="sdiv"></div>
+    <div class="sf">
+      <label>Typ produkcji</label>
+      <select>
+        <option>Film / Reklama TV</option>
+        <option>Fotografia</option>
+        <option>Serial / Dokument</option>
+        <option>Event</option>
+      </select>
+    </div>
+    <button class="search-btn" onclick="syncHero();render();go('browse')">Szukaj →</button>
+  </div>
+  <div class="stats">
+    <div><div class="stat-n">340+</div><div class="stat-l">Zwierząt w bazie</div></div>
+    <div><div class="stat-n">8</div><div class="stat-l">Krajów</div></div>
+    <div><div class="stat-n">1 200+</div><div class="stat-l">Zrealizowanych produkcji</div></div>
+    <div><div class="stat-n">48h</div><div class="stat-l">Czas potwierdzenia</div></div>
+  </div>
+</section>
+
+<!-- BROWSE -->
+<section class="sec" id="s-browse">
+  <div class="sec-h">
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+      <h2 class="sec-title">Przeglądaj zwierzęta</h2>
+      <span class="res-count" id="res-count"></span>
+    </div>
+    <a class="sec-link" href="#">Zobacz wszystkie (340) →</a>
+  </div>
+  <!-- AI SEARCH PANEL -->
+  <div class="ai-panel">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <span class="ai-badge">✨ AI Szukaj</span>
+      <span style="color:var(--muted);font-size:12px">Opisz słowami czego szukasz — AI dobierze zwierzęta z bazy</span>
+    </div>
+    <div class="ai-panel-top">
+      <input class="ai-input" id="ai-q" type="text"
+        placeholder="np. &quot;duży pies do reklamy dla dzieci w Polsce&quot; albo &quot;dzikie koty premium zagranicą&quot;"
+        onkeydown="if(event.key==='Enter')aiSearch()">
+      <button class="ai-go" id="ai-btn" onclick="aiSearch()">🤖 Szukaj AI</button>
+    </div>
+    <div class="ai-result" id="ai-result">
+      <div class="ai-label">Odpowiedź AI</div>
+      <div id="ai-text"></div>
+      <button class="ai-clear" onclick="aiClear()">× Wyczyść i wróć do pełnej listy</button>
+    </div>
+  </div>
+
+  <div class="cats" id="cats">
+    <div class="cat on" data-f="all">🐾 Wszystkie</div>
+    <div class="cat" data-f="psy">🐕 Psy</div>
+    <div class="cat" data-f="koty">🐱 Koty</div>
+    <div class="cat" data-f="konie">🐎 Konie</div>
+    <div class="cat" data-f="dzikie">🦁 Dzikie koty</div>
+    <div class="cat" data-f="ptaki">🦅 Ptaki</div>
+    <div class="cat" data-f="gady">🐊 Gady</div>
+    <div class="cat" data-f="morskie">🐬 Morskie</div>
+    <div class="cat" data-f="inne">🐘 Egzotyczne</div>
+  </div>
+  <div class="fbar">
+    <select class="fsel" id="fcountry" onchange="render()">
+      <option value="">Kraj: Wszystkie</option>
+      <option value="PL">🇵🇱 Polska</option>
+      <option value="CZ">🇨🇿 Czechy</option>
+      <option value="AT">🇦🇹 Austria</option>
+      <option value="DE">🇩🇪 Niemcy</option>
+    </select>
+    <select class="fsel" id="fprice" onchange="render()">
+      <option value="">Cena: Dowolna</option>
+      <option value="low">Do 800 PLN/dzień</option>
+      <option value="mid">800–3 000 PLN/dzień</option>
+      <option value="high">Powyżej 3 000 (premium)</option>
+    </select>
+    <select class="fsel" id="fsort" onchange="render()">
+      <option value="score">⭐ AnimaScore (domyślny)</option>
+      <option value="prod">Popularność</option>
+      <option value="price_asc">Cena: rosnąco</option>
+      <option value="price_desc">Cena: malejąco</option>
+      <option value="name">Nazwa A–Z</option>
+    </select>
+    <div class="ftag" id="avail-filter" onclick="toggleAvail()">🟢 Dostępne teraz ×</div>
+  </div>
+  <div class="grid" id="grid"></div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="sec" id="s-how" style="background:var(--bg2)">
+  <div style="max-width:860px;margin:0 auto;text-align:center">
+    <h2 class="sec-title" style="margin-bottom:8px">Jak to działa?</h2>
+    <p style="color:var(--muted);margin-bottom:40px">Cztery kroki od wyszukania do realizacji na planie</p>
+    <div class="steps">
+      <div class="step reveal"><div class="step-n">1</div><div class="step-t">Znajdź zwierzę</div><div class="step-d">Przeglądaj bazę, filtruj po gatunku, kraju i dostępności. Sprawdź portfolio i certyfikaty.</div></div>
+      <div class="step reveal"><div class="step-n">2</div><div class="step-t">Wyślij zapytanie</div><div class="step-d">Podaj daty, typ produkcji i wymagania. Wstępna blokada terminu — bez zobowiązań.</div></div>
+      <div class="step reveal"><div class="step-n">3</div><div class="step-t">Potwierdzenie</div><div class="step-d">Agencja/treser odpowiada w 48h. Podpisujesz umowę online i wpłacasz 30% zaliczki.</div></div>
+      <div class="step reveal"><div class="step-n">4</div><div class="step-t">Realizacja</div><div class="step-d">Zwierzę przyjeżdża z treserem i potwierdzonym OC właściciela. Weterynarz on-set dostępny na żądanie.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- INTERNATIONAL -->
+<section class="sec" id="s-intl">
+  <div class="intl reveal">
+    <div>
+      <div class="badge" style="margin-bottom:18px">🌍 Dostęp do całej Europy</div>
+      <h2 class="intl-t">Zwierzęta nieosiągalne<br>w Polsce?</h2>
+      <p class="intl-d">Niektóre gatunki są niedostępne w Polsce z powodów prawnych lub hodowlanych. AnimaCast współpracuje z licencjonowanymi partnerami w 8 krajach i organizuje transport, dokumentację CITES oraz konsultacje prawne.</p>
+      <div class="checks">
+        <div class="check"><span class="ck">✓</span> Dokumentacja CITES — pomagamy uzyskać i zweryfikować</div>
+        <div class="check"><span class="ck">✓</span> Konsultacja prawna — legalność gatunku w miejscu realizacji</div>
+        <div class="check"><span class="ck">✓</span> Transport & logistyka — koordynacja przejazdu przez granicę</div>
+        <div class="check"><span class="ck">✓</span> Weryfikacja OC właściciela — sprawdzamy ważność i zakres polisy przed każdą produkcją</div>
+      </div>
+      <button class="btn btn-g" style="padding:12px 26px;font-size:14px" onclick="document.getElementById('sc').value='CZ';render();go('browse')">Przeglądaj zagranicę →</button>
+    </div>
+    <div>
+      <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:14px">Dostępne kraje</div>
+      <div class="cpills">
+        <div class="cpill">🇵🇱 Polska</div><div class="cpill">🇨🇿 Czechy</div>
+        <div class="cpill">🇦🇹 Austria</div><div class="cpill">🇩🇪 Niemcy</div>
+        <div class="cpill">🇸🇰 Słowacja</div><div class="cpill">🇭🇺 Węgry</div>
+        <div class="cpill">🇳🇱 Holandia</div><div class="cpill">🇧🇪 Belgia</div>
+      </div>
+      <div class="ex-box">
+        <strong style="color:var(--text)">Przykłady z zagranicy</strong><br>
+        🦁 Lew Berberyjski — Praha, CZ<br>
+        🐆 Gepard — Brno, CZ<br>
+        🐯 Tygrys Biały — Wiedeń, AT<br>
+        🐘 Słoń Azjatycki — Wiedeń, AT<br>
+        🐈‍⬛ Czarna Pantera (jaguar) — Berlin, DE<br>
+        🐺 Wilk Arktyczny — München, DE
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOR PRODUCERS -->
+<section class="sec" id="s-producers">
+  <div style="text-align:center;margin-bottom:44px">
+    <div class="badge" style="margin-bottom:14px">🎬 Dla Domów Produkcyjnych i Agencji</div>
+    <h2 class="sec-title">Plany dla producentów</h2>
+    <p style="color:var(--muted);margin-top:10px;max-width:520px;margin-inline:auto;font-size:15px">Od jednorazowego castingu po stałą współpracę z dedykowanym koordynatorem i SLA 4h.</p>
+  </div>
+
+  <div class="pgrid">
+    <div class="pc reveal">
+      <div class="pname">Casting</div>
+      <div class="pprice">0 PLN <s>/ mies.</s></div>
+      <div class="pcomm">+ 15% prowizji od rezerwacji</div>
+      <div class="pdesc">Jednorazowy projekt lub testowanie platformy. Płacisz tylko kiedy rezerwujesz.</div>
+      <ul class="pf">
+        <li>Dostęp do pełnej bazy zwierząt</li>
+        <li>Do 3 zapytań miesięcznie</li>
+        <li>Odpowiedź w 48 godzinach</li>
+        <li>Automatyczna umowa online</li>
+        <li>Weryfikacja OC właściciela (wymagane przy rejestracji)</li>
+        <li class="x">Priorytetowa kolejka zapytań</li>
+        <li class="x">Dedykowany koordynator</li>
+        <li class="x">Gwarantowane zwierzę backup</li>
+      </ul>
+      <button class="pbtn btn btn-o" onclick="go('browse')">Zacznij bezpłatnie</button>
+    </div>
+
+    <div class="pc hot reveal">
+      <div class="pbadge">NAJPOPULARNIEJSZY</div>
+      <div class="pname">Studio</div>
+      <div class="pprice">499 PLN <s>/ mies.</s></div>
+      <div class="pcomm">+ 10% prowizji od rezerwacji</div>
+      <div class="pdesc">Studia i domy produkcyjne z kilkoma projektami rocznie. Zwraca się już przy 2 rezerwacjach.</div>
+      <ul class="pf">
+        <li>Nielimitowane zapytania</li>
+        <li>Odpowiedź priorytetowa — 24h</li>
+        <li>Dedykowany koordynator castingu</li>
+        <li>Priorytet przy szukaniu zwierzęcia zastępczego</li>
+        <li>Dashboard z historią produkcji</li>
+        <li>Automatyczne umowy + e-podpis</li>
+        <li>Faktury VAT automatyczne</li>
+        <li class="x">SLA 4h i account manager</li>
+      </ul>
+      <button class="pbtn btn btn-g">Wybierz Studio</button>
+    </div>
+
+    <div class="pc reveal">
+      <div class="pname">Premium</div>
+      <div class="pprice">1 499 PLN <s>/ mies.</s></div>
+      <div class="pcomm">+ 6% prowizji od rezerwacji</div>
+      <div class="pdesc">Duże domy produkcyjne, agencje reklamowe. Minimalna prowizja, maksymalny serwis.</div>
+      <ul class="pf">
+        <li>Wszystko z planu Studio</li>
+        <li>SLA 4h — gwarantowana odpowiedź</li>
+        <li>Dedykowany account manager</li>
+        <li>Konsultacja pre-produkcyjna w cenie</li>
+        <li>Własny portal z Twoim logo</li>
+        <li>Umowy z custom brandingiem</li>
+        <li>Dostęp do zwierząt niezlokalizowanych w bazie</li>
+        <li>API + integracja z production tools</li>
+      </ul>
+      <button class="pbtn btn btn-o">Skontaktuj się</button>
+    </div>
+  </div>
+
+  <!-- DLACZEGO PRZEZ PLATFORMĘ -->
+  <div class="vs-wrap reveal">
+    <div class="vs-title">Platforma vs. bezpośredni kontakt</div>
+    <div class="vs-sub">Co tracisz rezygnując z AnimaCast po pierwszej produkcji?</div>
+
+    <div class="vs-table">
+      <div class="vs-head">
+        <div></div>
+        <div class="hlh">✦ Przez AnimaCast</div>
+        <div>Bezpośrednio</div>
+      </div>
+
+      <div class="vs-row">
+        <div class="vs-feat">Umowa i dokumenty<span>Gotowe online w 10 minut</span></div>
+        <div class="hlc"><span class="vs-ok">✓</span> Automatyczna, prawnie ważna</div>
+        <div><span class="vs-no">✗</span> <span style="color:var(--muted)">Piszesz sam lub płacisz prawnikowi</span></div>
+      </div>
+
+      <div class="vs-row">
+        <div class="vs-feat">Weryfikacja OC właściciela<span>Sprawdzamy ważność i zakres polisy</span></div>
+        <div class="hlc"><span class="vs-ok">✓</span> Weryfikujemy przed każdą produkcją</div>
+        <div><span class="vs-no">✗</span> <span style="color:var(--muted)">Sam sprawdzasz — lub ryzykujesz bez polisy</span></div>
+      </div>
+
+      <div class="vs-row">
+        <div class="vs-feat">Zwierzę backup<span>Na wypadek choroby/niedyspozycji</span></div>
+        <div class="hlc"><span class="vs-ok">✓</span> Szukamy zamiennika z bazy 340+ zwierząt</div>
+        <div><span class="vs-no">✗</span> <span style="color:var(--muted)">Znasz jeden kontakt — zero opcji zastępczych</span></div>
+      </div>
+
+      <div class="vs-row">
+        <div class="vs-feat">Weterynarz on-set<span>Bezpieczeństwo zwierzęcia i planu</span></div>
+        <div class="hlc"><span class="vs-ok">✓</span> Dostępny na żądanie, +350 PLN/dzień</div>
+        <div><span class="vs-no">✗</span> <span style="color:var(--muted)">Musisz znaleźć i zatrudnić samemu</span></div>
+      </div>
+
+      <div class="vs-row">
+        <div class="vs-feat">Odpowiedzialność prawna<span>Gdy coś pójdzie nie tak</span></div>
+        <div class="hlc"><span class="vs-ok">✓</span> AnimaCast pośredniczy i odpowiada</div>
+        <div><span class="vs-no">✗</span> <span style="color:var(--muted)">Spada w całości na Ciebie</span></div>
+      </div>
+
+      <div class="vs-row">
+        <div class="vs-feat">Historia rezerwacji i faktury<span>Dokumentacja produkcji</span></div>
+        <div class="hlc"><span class="vs-ok">✓</span> Dashboard, PDF, eksport</div>
+        <div><span class="vs-no">✗</span> <span style="color:var(--muted)">Własne notatki, brak VAT automatycznie</span></div>
+      </div>
+
+      <div class="vs-row">
+        <div class="vs-feat">Dostęp do całej Europy<span>340+ zwierząt, 8 krajów</span></div>
+        <div class="hlc"><span class="vs-ok">✓</span> Jeden kontakt, wszystkie kraje</div>
+        <div><span class="vs-no">✗</span> <span style="color:var(--muted)">Znasz tylko jedno zwierzę z jednego kraju</span></div>
+      </div>
+
+      <div class="vs-row">
+        <div class="vs-feat">Klauzula non-circumvention<span>Zabezpieczenie obu stron</span></div>
+        <div class="hlc"><span class="vs-ok">✓</span> Jasne zasady, ochrona współpracy</div>
+        <div><span class="vs-no">✗</span> <span style="color:var(--muted)">Ryzyko sporu z właścicielem / agencją</span></div>
+      </div>
+    </div>
+
+    <div class="risk-box reveal">
+      <div class="risk-icon">⚖️</div>
+      <div>
+        <div class="risk-title">Klauzula 36-miesięczna — zabezpieczenie dla obu stron</div>
+        <div class="risk-desc">Właściciele rejestrując zwierzę w AnimaCast podpisują umowę agencyjną: wszystkie kontakty nawiązane przez platformę podlegają prowizji przez 36 miesięcy. Oznacza to, że <strong style="color:var(--text)">bezpośrednia współpraca po pierwszym kontakcie nie eliminuje zobowiązań</strong> — platforma nadal generuje dla Ciebie przychód. To standardowa praktyka agencji talentów i największych marketplace'ów w Polsce.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="sec" id="s-owners" style="background:var(--bg2)">
+  <div style="text-align:center;margin-bottom:44px">
+    <h2 class="sec-title">Dla właścicieli i agencji</h2>
+    <p style="color:var(--muted);margin-top:8px;max-width:520px;margin-inline:auto;font-size:15px">Zarabiaj na produkcjach filmowych i sesjach foto. Płacisz prowizję tylko od zrealizowanej rezerwacji.</p>
+  </div>
+  <div class="pgrid">
+    <div class="pc reveal">
+      <div class="pname">Starter</div>
+      <div class="pprice">0 PLN <s>/ mies.</s></div>
+      <div class="pcomm">+ 18% prowizji od rezerwacji</div>
+      <div class="pdesc">Przetestuj bez ryzyka. Płacisz tylko kiedy zarobisz.</div>
+      <ul class="pf">
+        <li>1 profil zwierzęcia</li><li>5 zdjęć w galerii</li>
+        <li>Wyszukiwarka i rezerwacje online</li><li>Umowy generowane automatycznie</li>
+        <li class="x">Wyróżnienie w wyszukiwarce</li><li class="x">Analytics i statystyki</li><li class="x">Opiekun konta</li>
+      </ul>
+      <button class="pbtn btn btn-o">Zacznij za darmo</button>
+    </div>
+    <div class="pc hot reveal">
+      <div class="pbadge">NAJPOPULARNIEJSZY</div>
+      <div class="pname">Pro</div>
+      <div class="pprice">299 PLN <s>/ mies.</s></div>
+      <div class="pcomm">+ 12% prowizji od rezerwacji</div>
+      <div class="pdesc">Aktywni treserzy i małe agencje. Zwraca się po 2–3 bookingach.</div>
+      <ul class="pf">
+        <li>Do 10 profili zwierząt</li><li>30 zdjęć + 3 filmy demo</li>
+        <li>Wyróżnienie w kategorii (top 3)</li><li>Analytics i statystyki oglądań</li>
+        <li>Priorytetowy support 24h</li><li>Umowy + e-podpis online</li>
+        <li class="x">Dedykowany opiekun konta</li>
+      </ul>
+      <button class="pbtn btn btn-g">Wybierz Pro</button>
+    </div>
+    <div class="pc reveal">
+      <div class="pname">Agencja</div>
+      <div class="pprice">899 PLN <s>/ mies.</s></div>
+      <div class="pcomm">+ 8% prowizji od rezerwacji</div>
+      <div class="pdesc">Duże agencje, hodowle, parki. Minimalna prowizja, maksymalna widoczność.</div>
+      <ul class="pf">
+        <li>Nielimitowane profile</li><li>Nielimitowane media</li>
+        <li>Top pozycja w każdej kategorii</li><li>Dedykowany opiekun konta</li>
+        <li>API dostęp (własna integracja)</li><li>Strona poddomeny</li><li>Umowy custom z Twoim logo</li>
+      </ul>
+      <button class="pbtn btn btn-o">Skontaktuj się</button>
+    </div>
+  </div>
+  <div style="margin-top:20px;padding:18px;background:rgba(255,255,255,.03);border-radius:12px;border:1px solid var(--border);text-align:center;font-size:13px;color:var(--muted)">
+    Wszystkie plany: zarządzanie rezerwacjami · bezpieczne płatności Stripe · dokumenty CITES · umowy online · panel statystyk
+  </div>
+  <div style="margin-top:32px">
+    <h3 style="font-size:17px;font-weight:700;margin-bottom:16px">Usługi dodatkowe</h3>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px">
+        <div style="font-size:26px;margin-bottom:8px">⚖️</div>
+        <div style="font-weight:700;margin-bottom:5px;font-size:14px">Konsultacja prawna</div>
+        <div style="color:var(--muted);font-size:12px;line-height:1.6">Weryfikacja legalności gatunku, CITES, transport. Od 250 PLN/sesja.</div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px">
+        <div style="font-size:26px;margin-bottom:8px">🛡️</div>
+        <div style="font-weight:700;margin-bottom:5px;font-size:14px">Ubezpieczenie OC</div>
+        <div style="color:var(--muted);font-size:12px;line-height:1.6">Polisa na zwierzę na planie. Dzień lub cała produkcja. Od 180 PLN/dzień.</div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px">
+        <div style="font-size:26px;margin-bottom:8px">🩺</div>
+        <div style="font-weight:700;margin-bottom:5px;font-size:14px">Weterynarz on-set</div>
+        <div style="color:var(--muted);font-size:12px;line-height:1.6">Lekarz weterynarii przez cały dzień zdjęciowy. Od 350 PLN/dzień.</div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px">
+        <div style="font-size:26px;margin-bottom:8px">🧠</div>
+        <div style="font-weight:700;margin-bottom:5px;font-size:14px">Behawiorysta</div>
+        <div style="color:var(--muted);font-size:12px;line-height:1.6">Specjalista pre-produkcja i on-set. Od 400 PLN/dzień.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="fb">
+    <div class="logo">Anima<span>Cast</span></div>
+    <p>Pierwsza platforma łącząca produkcje filmowe i fotograficzne z profesjonalnymi zwierzętami. Polska i Europa.</p>
+  </div>
+  <div><h4>Platforma</h4><ul><li><a href="#">Przeglądaj zwierzęta</a></li><li><a href="#">Dostępność w Europie</a></li><li><a href="#">Dodaj zwierzę</a></li><li><a href="#">Cennik</a></li></ul></div>
+  <div><h4>Zasoby</h4><ul><li><a href="#">Dokumentacja CITES</a></li><li><a href="#">Konsultacje prawne</a></li><li><a href="#">Ubezpieczenia OC</a></li><li><a href="#">Blog produkcyjny</a></li></ul></div>
+  <div><h4>Firma</h4><ul><li><a href="#">O AnimaCast</a></li><li><a href="#">Kontakt</a></li><li><a href="#">Regulamin</a></li><li><a href="#">Polityka prywatności</a></li></ul></div>
+  <div class="fc">AnimaCast nie jest właścicielem zwierząt — jest platformą łączącą produkcje z agencjami. © 2025</div>
+</footer>
+
+<!-- ANIMAL MODAL -->
+<div class="mo" id="mo-animal">
+  <div class="modal">
+    <div class="mh">
+      <div>
+        <div style="font-size:10px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">Profil zwierzęcia</div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="font-size:17px;font-weight:800" id="m-name">—</div>
+          <div id="m-score-badge"></div>
+          <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.04);padding:4px 10px;border-radius:8px">
+            <span style="font-size:10px;color:var(--muted);font-weight:700">AnimaScore</span>
+            <span id="m-score" style="font-size:16px;font-weight:800">—</span>
+            <span style="font-size:10px;color:var(--muted)">/100</span>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <button class="fav-btn-nav" id="m-fav-btn" onclick="toggleFavModal()" style="font-size:12px;padding:7px 14px">♡ Dodaj do ulubionych</button>
+        <button class="mclose" onclick="closeMo('mo-animal')">×</button>
+      </div>
+    </div>
+    <div class="mb">
+      <div class="adg">
+        <div>
+          <div class="gal-main">
+            <img id="gal-img" src="" alt="" onerror="this.style.display='none'">
+            <div class="gal-emoji" id="gal-emoji"></div>
+          </div>
+          <div class="thumbs" id="thumbs"></div>
+          <div style="margin-top:22px">
+            <div style="font-size:14px;font-weight:700;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)">O zwierzęciu</div>
+            <p style="color:var(--muted);font-size:13px;line-height:1.7" id="m-desc">—</p>
+          </div>
+          <div style="margin-top:20px">
+            <div style="font-size:14px;font-weight:700;margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)">Certyfikaty</div>
+            <div class="certs" id="m-certs"></div>
+          </div>
+          <div style="margin-top:20px">
+            <div style="font-size:14px;font-weight:700;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)">Szczegóły</div>
+            <div id="m-meta"></div>
+          </div>
+        </div>
+        <div>
+          <div class="bpanel">
+            <div class="bprice" id="m-price">— <s>/ dzień</s></div>
+            <div class="bnote">Cena netto. Prowizja platformy: 12–18%.</div>
+            <div class="price-calc" id="price-calc">
+              <div class="pc-row"><span>Liczba dni</span><span id="pc-days">—</span></div>
+              <div class="pc-row"><span>Cena za dzień</span><span id="pc-daily">—</span></div>
+              <div class="pc-total"><span>Szacowany koszt</span><span id="pc-total">—</span></div>
+              <div style="font-size:11px;color:var(--muted);margin-top:8px">+ transport, weterynarz i ubezpieczenie wyceniane osobno</div>
+            </div>
+            <div class="ff"><label>Data od</label><input type="date" id="date-from" oninput="calcPrice()"></div>
+            <div class="ff"><label>Data do</label><input type="date" id="date-to" oninput="calcPrice()"></div>
+            <div class="ff"><label>Typ produkcji</label>
+              <select id="prod-type"><option>Film fabularny</option><option>Reklama TV</option><option>Sesja fotograficzna</option><option>Serial / Dokument</option><option>Event</option></select>
+            </div>
+            <div style="height:1px;background:var(--border);margin:12px 0"></div>
+            <div class="ff"><label>Twoje imię i nazwisko *</label><input type="text" id="contact-name" placeholder="Jan Kowalski"></div>
+            <div class="ff"><label>E-mail kontaktowy *</label><input type="email" id="contact-email" placeholder="jan@firma.pl"></div>
+            <div class="ff"><label>Telefon</label><input type="tel" id="contact-phone" placeholder="+48 600 000 000"></div>
+            <div class="ff"><label>Dodatkowe wymagania</label><textarea id="prod-notes" placeholder="Opisz scenę, lokalizację planu, specyficzne wymagania…"></textarea></div>
+            <button class="bsub" id="bsub-btn" onclick="submitInquiry()">Wyślij zapytanie →</button>
+            <div class="bmini">Wstępna rezerwacja bez zobowiązań. Odpowiedź w 48h.<br>Umowa i zaliczka 30% po potwierdzeniu.</div>
+            <div style="margin-top:12px;padding:10px 12px;background:rgba(200,144,58,.06);border:1px solid rgba(200,144,58,.18);border-radius:8px;font-size:11px;color:var(--muted);line-height:1.5">
+              🔒 Rezerwacja jest objęta klauzulą non-circumvention (36 mies.). Szczegóły w regulaminie platformy.
+            </div>
+          </div>
+          <div class="incl">
+            <h4>Co zawiera rezerwacja?</h4>
+            <div class="incl-row"><span style="color:var(--ok)">✓</span> Treser właściciela przez cały czas zdjęciowy</div>
+            <div class="incl-row"><span style="color:var(--ok)">✓</span> OC właściciela zweryfikowane przez AnimaCast</div>
+            <div class="incl-row"><span style="color:var(--ok)">✓</span> Umowa i dokumentacja przez platformę</div>
+            <div class="incl-row"><span style="color:var(--gold)">+</span> Konsultacja behawioralna pre-prod. (na żądanie)</div>
+            <div class="incl-row"><span style="color:var(--gold)">+</span> Weterynarz on-set (+350 PLN/dzień)</div>
+            <div class="incl-row"><span style="color:var(--gold)">+</span> Transport (wycena po ustaleniu lokalizacji)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS -->
+<div class="mo" id="mo-ok">
+  <div class="success-modal">
+    <div style="font-size:64px;margin-bottom:20px">🎬</div>
+    <h2 style="font-size:24px;font-weight:800;margin-bottom:10px">Zapytanie wysłane!</h2>
+    <p style="color:var(--muted);margin-bottom:28px;font-size:14px;line-height:1.7">Treser skontaktuje się z Tobą w ciągu 48 godzin roboczych. E-mail z potwierdzeniem już w drodze.</p>
+    <div style="background:var(--card);border-radius:12px;padding:18px;text-align:left;margin-bottom:22px">
+      <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:10px">Co dalej?</div>
+      <div style="font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:6px">
+        <div>1. E-mail z potwierdzeniem zapytania już w drodze</div>
+        <div>2. Treser/agencja potwierdza dostępność i cenę</div>
+        <div>3. Podpisujecie umowę online, wpłacasz 30% zaliczki</div>
+        <div>4. Rezerwacja potwierdzona ✅</div>
+      </div>
+    </div>
+    <button class="btn btn-g" style="width:100%;padding:13px;font-size:14px" onclick="closeMo('mo-ok');closeMo('mo-animal')">Wróć do przeglądania</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script>
+// ── DANE ────────────────────────────────────────────────────────────
+const U = 'https://images.unsplash.com/photo-';
+const A = [
+  {id:1,n:'Rex',sp:'Owczarek Niemiecki',cat:'psy',e:'🐕',loc:'Warszawa',country:'PL',flag:'🇵🇱',
+   priceNum:850,price:'850 PLN',priceT:'low',tags:['Film','Reklama','TV'],prod:47,avail:true,
+   photos:[U+'1589924691701-786f45cd5fb1?w=800&h=540&fit=crop&auto=format',
+           U+'1568572933382-74d440642117?w=800&h=540&fit=crop&auto=format',
+           U+'1626093397892-89e8d0b7e2c9?w=800&h=540&fit=crop&auto=format'],
+   desc:'Doświadczony owczarek szkolony od 2 roku życia. 47 produkcji — spoty dla Lidl, Żywiec, TVP. Spokojny na planie, reaguje na komendy niewerbalne. Nieagresywny wobec dzieci i innych zwierząt.',
+   certs:['Certyfikat treserski PZK (ważny 2026)','Ubezpieczenie OC 2 mln PLN','Aktualna książka zdrowia','Behawiorysta dostępny on-set'],
+   age:'6 lat',trainer:'Jan Kowalski (22 lata dośw.)'},
+
+  {id:2,n:'Luna',sp:'Klacz Lipizzan',cat:'konie',e:'🐎',loc:'Kraków',country:'PL',flag:'🇵🇱',
+   priceNum:1200,price:'1 200 PLN',priceT:'mid',tags:['Film','Fotografia','Reklama'],prod:23,avail:true,
+   photos:[U+'1553284965-83fd3e82fa5a?w=800&h=540&fit=crop&auto=format',
+           U+'1598974357801-cbca100e65d3?w=800&h=540&fit=crop&auto=format',
+           U+'1452978446-5073180939ed?w=800&h=540&fit=crop&auto=format'],
+   desc:'Biała klacz lipizzan idealna do produkcji historycznych i artystycznych. Uczy się nowych komend w ciągu 2 dni. 23 produkcje, w tym filmy kostiumowe i reklamy modowe.',
+   certs:['Ubezpieczenie OC 3 mln PLN','Paszport konia UE','Badania weterynaryjne 2025','Treser z licencją FEI'],
+   age:'8 lat',trainer:'Anna Marek (15 lat dośw.)'},
+
+  {id:3,n:'Aragon',sp:'Lew Berberyjski',cat:'dzikie',e:'🦁',loc:'Praha',country:'CZ',flag:'🇨🇿',
+   priceNum:4500,price:'4 500 EUR',priceT:'high',tags:['Film','Reklama Premium'],prod:12,avail:true,
+   photos:[U+'1546182990-dffeafbe841d?w=800&h=540&fit=crop&auto=format',
+           U+'1503256207526-0d5523054941?w=800&h=540&fit=crop&auto=format',
+           U+'1552751753-0fc84ae5b6c8?w=800&h=540&fit=crop&auto=format'],
+   desc:'Dorosły samiec lwa berberyjskiego — jedna z najrzadszych podgatunków. Wymaga 3-osobowego zespołu treserskiego. Używany w reklamach luksusowych marek europejskich i filmach.',
+   certs:['CITES Aneks II (UE)','Ubezpieczenie OC 5 mln EUR','Weterynarz senior on-set','Licencja eksportowa CZ','Behawiorysta dużych kotów'],
+   age:'5 lat',trainer:'Karel Novák (18 lat dośw. — duże koty)'},
+
+  {id:4,n:'Max',sp:'Golden Retriever',cat:'psy',e:'🦮',loc:'Wrocław',country:'PL',flag:'🇵🇱',
+   priceNum:650,price:'650 PLN',priceT:'low',tags:['Reklama','Fotografia','Event'],prod:89,avail:true,
+   photos:[U+'1587300003388-59208cc962cb?w=800&h=540&fit=crop&auto=format',
+           U+'1552053831-71594a27632d?w=800&h=540&fit=crop&auto=format',
+           U+'1534361960057-19f4385f7c8b?w=800&h=540&fit=crop&auto=format'],
+   desc:'Najpopularniejszy pies reklamowy w Polsce. 89 zrealizowanych produkcji. Ideał do reklam rodzinnych i zdjęć produktowych. Perfekcyjnie reaguje na zdalne komendy.',
+   certs:['Certyfikat PZK I stopień','Ubezpieczenie OC 1 mln PLN','Aktualne szczepienia i chip'],
+   age:'4 lata',trainer:'Piotr Zając (10 lat dośw.)'},
+
+  {id:5,n:'Kleo',sp:'Ara Czerwona',cat:'ptaki',e:'🦜',loc:'Gdańsk',country:'PL',flag:'🇵🇱',
+   priceNum:400,price:'400 PLN',priceT:'low',tags:['Fotografia','Event','TV'],prod:31,avail:true,
+   photos:[U+'1552728089-57bdde30beb3?w=800&h=540&fit=crop&auto=format',
+           U+'1569974507005-6dc42051b956?w=800&h=540&fit=crop&auto=format',
+           U+'1508214664118-66a04e3cd21c?w=800&h=540&fit=crop&auto=format'],
+   desc:'Ara czerwona tresowana od pisklęcia. Siada na ramieniu na komendę, naśladuje głosy. Gwiazda sesji reklamowych i eventów. Świetnie toleruje kamery i oświetlenie studyjne.',
+   certs:['CITES Aneks I — wpis do rejestru','Ubezpieczenie OC','Świadectwo zdrowia aktualne'],
+   age:'7 lat',trainer:'Monika Lis (12 lat dośw.)'},
+
+  {id:6,n:'Thor',sp:'Bielik Europejski',cat:'ptaki',e:'🦅',loc:'Zakopane',country:'PL',flag:'🇵🇱',
+   priceNum:750,price:'750 PLN',priceT:'low',tags:['Film','Fotografia','Reklama'],prod:19,avail:false,
+   photos:[U+'1516026672447-82e19b39efb2?w=800&h=540&fit=crop&auto=format',
+           U+'1527335480088-278a58b5ecce?w=800&h=540&fit=crop&auto=format'],
+   desc:'Dorosły bielik europejski. Loty na komendę, lądowanie na rękawicy, siedzenie na postumencie. Idealny do dramatycznych scen plenerowych.',
+   certs:['Zezwolenie GDOŚ (gatunek chroniony)','Ubezpieczenie OC','Certyfikat sokolniczy klasy A'],
+   age:'4 lata',trainer:'Tomasz Górka (sokolnik, 20 lat dośw.)'},
+
+  {id:7,n:'Zara',sp:'Gepard',cat:'dzikie',e:'🐆',loc:'Brno',country:'CZ',flag:'🇨🇿',
+   priceNum:3500,price:'3 500 EUR',priceT:'high',tags:['Reklama Premium','Film','Fotografia'],prod:8,avail:true,
+   photos:[U+'1549366021-9f761d040a94?w=800&h=540&fit=crop&auto=format',
+           U+'1474511320723-9a56873867b5?w=800&h=540&fit=crop&auto=format'],
+   desc:'Młoda samica geparda — jedna z 3 tresowanych gepardów w Europie Środkowej. Wymaga 2 treserów i behawiorysty. Używana w kampaniach luksusowych marek motoryzacyjnych.',
+   certs:['CITES Aneks I','Ubezpieczenie OC 3 mln EUR','Weterynarz on-set','Behawiorysta','Licencja CZ/EU'],
+   age:'3 lata',trainer:'Lukáš Dvořák (15 lat — duże koty)'},
+
+  {id:8,n:'Atlas',sp:'Niedźwiedź Brunatny',cat:'inne',e:'🐻',loc:'Zakopane',country:'PL',flag:'🇵🇱',
+   priceNum:2200,price:'2 200 PLN',priceT:'mid',tags:['Film','Reklama'],prod:5,avail:true,
+   photos:[U+'1530595467537-0b5996c41f2d?w=800&h=540&fit=crop&auto=format',
+           U+'1564349683136-77e08dba1ef7?w=800&h=540&fit=crop&auto=format'],
+   desc:'Samiec niedźwiedzia brunatnego tresowany od 2 roku życia. Uczestniczył w 2 filmach fabularnych i kilku reklamach. Jeden z najdłużej pracujących dużych zwierząt na polskich planach.',
+   certs:['Zezwolenie GDOŚ','Ubezpieczenie OC 5 mln PLN','Weterynarz on-set (obowiązkowy)','CITES'],
+   age:'8 lat',trainer:'Marek Wilk (25 lat dośw.)'},
+
+  {id:9,n:'Stella',sp:'Delfin Butlonosy',cat:'morskie',e:'🐬',loc:'Gdynia',country:'PL',flag:'🇵🇱',
+   priceNum:3800,price:'3 800 PLN',priceT:'high',tags:['Film','TV','Foto Podwodna'],prod:14,avail:true,
+   photos:[U+'1607153333879-c174d265f1d2?w=800&h=540&fit=crop&auto=format',
+           U+'1583337130417-3346a1be7dee?w=800&h=540&fit=crop&auto=format'],
+   desc:'Samica delfina butlonosego. Nagrania w basenie w Gdyni lub na otwartym morzu. Unikalna opcja dla produkcji morskich i podwodnych.',
+   certs:['Ubezpieczenie OC','Weterynarz morski on-set','Zezwolenie środowiskowe GDOŚ','CITES'],
+   age:'9 lat',trainer:'Zespół 4 specjalistów Delfinarium Gdynia'},
+
+  {id:10,n:'Nero',sp:'Czarna Pantera (jaguar)',cat:'dzikie',e:'🐈‍⬛',loc:'Berlin',country:'DE',flag:'🇩🇪',
+   priceNum:5000,price:'5 000 EUR',priceT:'high',tags:['Reklama Art','Film Premium'],prod:6,avail:false,
+   photos:[U+'1518020382113-a7e8fc38eac9?w=800&h=540&fit=crop&auto=format',
+           U+'1591189863430-ab87e120f312?w=800&h=540&fit=crop&auto=format'],
+   desc:'Czarny jaguar — jeden z 2 tresowanych w Europie. Z 4-osobowym zespołem specjalistów. Najczęściej w kampaniach samochodów i zegarków premium.',
+   certs:['CITES Aneks I','Ubezpieczenie OC 5 mln EUR','Weterynarz senior on-set','Kontrakt min. 2 dni'],
+   age:'4 lata',trainer:'Klaus Werner (20 lat — pantery)'},
+
+  {id:11,n:'Raja',sp:'Słoń Azjatycki',cat:'inne',e:'🐘',loc:'Wiedeń',country:'AT',flag:'🇦🇹',
+   priceNum:8500,price:'8 500 EUR',priceT:'high',tags:['Film Epic','Event Premium'],prod:9,avail:true,
+   photos:[U+'1564760055775-d63b17a55c44?w=800&h=540&fit=crop&auto=format',
+           U+'1557050543-4d5f4e07ef46?w=800&h=540&fit=crop&auto=format'],
+   desc:'Samiec słonia azjatyckiego, 22 lata. Tresowany 15 lat. Uczestniczył w 2 europejskich produkcjach dla Hollywoodu. Min. 5-osobowy zespół, specjalistyczny transport.',
+   certs:['CITES Aneks I','Ubezpieczenie OC 10 mln EUR','Weterynarz senior','Mahout z licencją EU','Min. 3 dni kontraktu'],
+   age:'22 lata',trainer:'Stefan Braun + mahout (Wiedeń)'},
+
+  {id:12,n:'Bruno',sp:'Wilk Europejski',cat:'inne',e:'🐺',loc:'Poznań',country:'PL',flag:'🇵🇱',
+   priceNum:1800,price:'1 800 PLN',priceT:'mid',tags:['Film','Serial','Reklama'],prod:11,avail:true,
+   photos:[U+'1474511320723-9a56873867b5?w=800&h=540&fit=crop&auto=format',
+           U+'1510737284560-0a8fa9e94b4a?w=800&h=540&fit=crop&auto=format'],
+   desc:'Dorosły samiec wilka europejskiego tresowany od szczenięcia. Świetny w plenerze i studiu. Para wilków dostępna za dopłatą. 2 polskie filmy fabularne.',
+   certs:['Zezwolenie GDOŚ (gatunek chroniony)','Ubezpieczenie OC 3 mln PLN','Weterynarz on-set','Behawiorysta'],
+   age:'5 lat',trainer:'Sławomir Kępa (18 lat dośw.)'},
+
+  {id:13,n:'Bella',sp:'Kot Perski',cat:'koty',e:'🐱',loc:'Warszawa',country:'PL',flag:'🇵🇱',
+   priceNum:350,price:'350 PLN',priceT:'low',tags:['Reklama','Fotografia','TV'],prod:34,avail:true,
+   photos:[U+'1533743851-51bcf1177c43?w=800&h=540&fit=crop&auto=format',
+           U+'1495360010541-f48722b4567f?w=800&h=540&fit=crop&auto=format',
+           U+'1518791841217-8f162f1912da?w=800&h=540&fit=crop&auto=format'],
+   desc:'Biała kotka perska — 34 produkcje reklamowe. Znana z kampanii Whiskas, Purina i kilku spotów kosmetycznych. Doskonale znosi oświetlenie studyjne i dłuższe sesje. Nie reaguje na flesze.',
+   certs:['Certyfikat treserski PTK','Aktualna książka zdrowia','Ubezpieczenie OC','Chip + paszport'],
+   age:'4 lata',trainer:'Katarzyna Nowak (8 lat dośw. — koty)'},
+
+  {id:14,n:'Kir',sp:'Maine Coon',cat:'koty',e:'😺',loc:'Kraków',country:'PL',flag:'🇵🇱',
+   priceNum:420,price:'420 PLN',priceT:'low',tags:['Film','Fotografia','Reklama'],prod:18,avail:true,
+   photos:[U+'1561948955-ea77d37cbbb9?w=800&h=540&fit=crop&auto=format',
+           U+'1548247416-ec66f4900b2e?w=800&h=540&fit=crop&auto=format'],
+   desc:'Okazały maine coon, 8 kg. Spokojny charakter, wyjątkowa fotogeniczność. 18 produkcji dla marek luksusowych. Idealny do scen wnętrzowych i zdjęć produktowych.',
+   certs:['Aktualne szczepienia i chip','Ubezpieczenie OC','Certyfikat hodowlany TICA'],
+   age:'5 lat',trainer:'Piotr Marek (6 lat dośw.)'},
+
+  {id:15,n:'Mia',sp:'Kot Europejski',cat:'koty',e:'🐈',loc:'Gdańsk',country:'PL',flag:'🇵🇱',
+   priceNum:280,price:'280 PLN',priceT:'low',tags:['Film','Serial','Reklama'],prod:52,avail:false,
+   photos:[U+'1574158622682-e68d8e0db26c?w=800&h=540&fit=crop&auto=format',
+           U+'1555604695-d04af6f267eb?w=800&h=540&fit=crop&auto=format'],
+   desc:'Najpracowitsza kotka w bazie — 52 produkcje. Ekspert od "cat acting": potrafi udawać śpiącą, skakać na komendę i reagować na wskaznik laserowy. Używana w 3 polskich serialach i wielu reklamach.',
+   certs:['Certyfikat treserski PTK','Ubezpieczenie OC','Aktualne szczepienia'],
+   age:'6 lat',trainer:'Marta Kowalczyk (11 lat dośw. — koty)'},
+];
+
+// ── STATE ──────────────────────────────────────────────────────────
+let activeCat='all', avFilter=true, favFilter=false;
+let favs=new Set(JSON.parse(localStorage.getItem('ac_favs')||'[]'));
+let currentAnimal=null, currentPhotoIdx=0;
+let aiMatchedIds=new Set();
+
+// ── ANIMASCORE ────────────────────────────────────────────────────
+function calcScore(a){
+  let s=0;
+  const c=a.certs.join(' ').toLowerCase();
+  if(/behawior/.test(c)) s+=25;
+  if(/ubezpieczenie/.test(c)) s+=20;
+  if(/certyfikat|sokolniczy|hodowlany|tica|fei|pzk|ptk|licencja|mahout/.test(c)) s+=20;
+  if(/weterynarz|weterynaryjne|badania|paszport|książka|zdrowia|szczepie|cites/.test(c)) s+=15;
+  if(a.photos.length>=3) s+=10;
+  if(a.prod>=10) s+=5;
+  return Math.min(s,100);
+}
+function scoreColor(s){return s>=70?'s-hi':s>=45?'s-mid':'s-lo';}
+function scoreBadge(s){
+  if(s>=75) return '<span class="badge-pro">✓ Pro Verified</span>';
+  if(s>=50) return '<span class="badge-std">✓ Standard</span>';
+  return '<span class="badge-pvt">Prywatny</span>';
+}
+
+// ── RENDER ─────────────────────────────────────────────────────────
+function renderCard(a,isPick,isDim){
+  return `<div class="card reveal${isPick?' ai-pick':''}${isDim?' dim':''}" onclick="openAnimal(${a.id})">
+    ${isPick?'<div class="ai-pick-bar">✨ Polecane przez AI</div>':''}
+    <div class="card-img-wrap">
+      <img src="${a.photos[0]}" alt="${a.n}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="card-img-emoji" style="display:none">${a.e}</div>
+      <div class="card-avail-badge${a.avail?'':' busy'}"><div class="dot"></div>${a.avail?'Dostępny':'Zajęty'}</div>
+      <button class="card-fav${favs.has(a.id)?' on':''}" onclick="event.stopPropagation();toggleFav(${a.id},this)">${favs.has(a.id)?'❤️':'🤍'}</button>
+    </div>
+    <div class="card-body">
+      <div class="ct"><div class="cn">${a.n}</div></div>
+      <div class="cs">${a.sp} ${a.flag} · ${a.loc}</div>
+      <div class="tags">${a.tags.map(t=>`<span class="tag">${t}</span>`).join('')}<span class="tag gt">${a.prod} prod.</span></div>
+      <div class="score-row">
+        <div class="score-num" style="color:${calcScore(a)>=70?'var(--ok)':calcScore(a)>=45?'var(--gold-l)':'#ff8c42'}">${calcScore(a)}</div>
+        <div class="score-track"><div class="score-fill ${scoreColor(calcScore(a))}" style="width:${calcScore(a)}%"></div></div>
+        ${scoreBadge(calcScore(a))}
+      </div>
+      <div class="cf"><div class="loc">📍 ${a.loc}, ${a.country}</div><div class="price">${a.price} <s>/ dzień</s></div></div>
+    </div>
+  </div>`;
+}
+
+function render(){
+  const q=(document.getElementById('sq').value||'').toLowerCase();
+  const fc=document.getElementById('fcountry').value||document.getElementById('sc').value;
+  const fp=document.getElementById('fprice').value;
+  const fs=document.getElementById('fsort').value;
+
+  let list=A.filter(a=>{
+    if(activeCat!=='all'&&a.cat!==activeCat)return false;
+    if(avFilter&&!a.avail)return false;
+    if(fc&&a.country!==fc)return false;
+    if(fp==='low'&&a.priceT!=='low')return false;
+    if(fp==='mid'&&a.priceT!=='mid')return false;
+    if(fp==='high'&&a.priceT!=='high')return false;
+    if(favFilter&&!favs.has(a.id))return false;
+    if(q&&!a.n.toLowerCase().includes(q)&&!a.sp.toLowerCase().includes(q)&&!a.loc.toLowerCase().includes(q))return false;
+    return true;
+  });
+
+  const sortFn=(a,b)=>{
+    if(fs==='score')return calcScore(b)-calcScore(a);
+    if(fs==='price_asc')return a.priceNum-b.priceNum;
+    if(fs==='price_desc')return b.priceNum-a.priceNum;
+    if(fs==='name')return a.n.localeCompare(b.n);
+    return b.prod-a.prod;
+  };
+  list.sort(sortFn);
+  document.getElementById('res-count').textContent=`${list.length} zwierząt`;
+
+  let html='';
+  if(aiActive && aiMatchedIds.size>0){
+    const picks=list.filter(a=>aiMatchedIds.has(a.id));
+    const rest=list.filter(a=>!aiMatchedIds.has(a.id));
+    if(picks.length) html+=picks.map(a=>renderCard(a,true,false)).join('');
+    if(rest.length) html+=`<div class="ai-sep">Pozostałe (${rest.length})</div>`+rest.map(a=>renderCard(a,false,true)).join('');
+    if(!list.length) html='<div style="color:var(--muted);padding:40px;grid-column:1/-1;text-align:center">Brak wyników.</div>';
+  } else {
+    html=list.length?list.map(a=>renderCard(a,false,false)).join(''):'<div style="color:var(--muted);padding:40px;grid-column:1/-1;text-align:center;font-size:14px">Brak wyników — zmień filtry.</div>';
+  }
+  document.getElementById('grid').innerHTML=html;
+  initReveal();
+}
+
+// ── CATEGORIES ────────────────────────────────────────────────────
+document.getElementById('cats').addEventListener('click',e=>{
+  const cat=e.target.closest('[data-f]');
+  if(!cat)return;
+  document.querySelectorAll('.cat').forEach(c=>c.classList.remove('on'));
+  cat.classList.add('on');
+  activeCat=cat.dataset.f;
+  render();
+});
+
+// ── AVAIL FILTER ──────────────────────────────────────────────────
+function toggleAvail(){
+  avFilter=!avFilter;
+  const el=document.getElementById('avail-filter');
+  el.textContent=avFilter?'🟢 Dostępne teraz ×':'📋 Wszystkie zwierzęta ×';
+  render();
+}
+
+// ── FAV SYSTEM ────────────────────────────────────────────────────
+function saveFavs(){localStorage.setItem('ac_favs',JSON.stringify([...favs]));}
+function updateFavBadge(){
+  const cnt=document.getElementById('fav-count');
+  const btn=document.getElementById('fav-nav-btn');
+  cnt.textContent=favs.size;
+  cnt.style.display=favs.size>0?'flex':'none';
+  btn.classList.toggle('on',favFilter);
+  btn.innerHTML=`${favFilter?'❤️':'♡'} Ulubione <span class="fav-count" id="fav-count" style="display:${favs.size>0?'flex':'none'}">${favs.size}</span>`;
+}
+function toggleFav(id,btn){
+  if(favs.has(id)){favs.delete(id);btn.textContent='🤍';btn.classList.remove('on');toast('Usunięto z ulubionych','fav');}
+  else{favs.add(id);btn.textContent='❤️';btn.classList.add('on');toast('❤️ Dodano do ulubionych','fav');}
+  saveFavs();updateFavBadge();
+}
+function toggleFavFilter(){
+  favFilter=!favFilter;
+  document.getElementById('fav-nav-btn').classList.toggle('on',favFilter);
+  render();
+}
+function toggleFavModal(){
+  if(!currentAnimal)return;
+  const id=currentAnimal.id;
+  const btn=document.getElementById('m-fav-btn');
+  if(favs.has(id)){favs.delete(id);btn.innerHTML='♡ Dodaj do ulubionych';btn.classList.remove('on');toast('Usunięto z ulubionych','fav');}
+  else{favs.add(id);btn.innerHTML='❤️ W ulubionych';btn.classList.add('on');toast('❤️ Dodano do ulubionych','fav');}
+  saveFavs();updateFavBadge();render();
+}
+
+// ── ANIMAL MODAL ──────────────────────────────────────────────────
+function openAnimal(id){
+  const a=A.find(x=>x.id===id);
+  currentAnimal=a;
+  currentPhotoIdx=0;
+
+  document.getElementById('m-name').textContent=a.n;
+  const sc=calcScore(a);
+  document.getElementById('m-score').textContent=sc;
+  document.getElementById('m-score').style.color=sc>=70?'var(--ok)':sc>=45?'var(--gold-l)':'#ff8c42';
+  document.getElementById('m-score-badge').innerHTML=scoreBadge(sc);
+  document.getElementById('m-desc').textContent=a.desc;
+  document.getElementById('m-price').innerHTML=`${a.price} <s>/ dzień</s>`;
+  document.getElementById('m-certs').innerHTML=a.certs.map(c=>`<div class="cert"><div class="ci">✓</div>${c}</div>`).join('');
+  document.getElementById('m-meta').innerHTML=[
+    ['Gatunek',a.sp],['Wiek',a.age],
+    ['Lokalizacja',`${a.loc}, ${a.country} ${a.flag}`],
+    ['Liczba produkcji',`${a.prod}`],['Treser',a.trainer],
+    ['Dostępność',a.avail?'<span style="color:var(--ok)">🟢 Dostępny</span>':'<span style="color:#ff8c42">🟠 Zajęty — zapytaj o termin</span>']
+  ].map(([l,v])=>`<div class="drow"><span class="dlabel">${l}</span><span class="dval">${v}</span></div>`).join('');
+
+  const favBtn=document.getElementById('m-fav-btn');
+  if(favs.has(id)){favBtn.innerHTML='❤️ W ulubionych';favBtn.classList.add('on');}
+  else{favBtn.innerHTML='♡ Dodaj do ulubionych';favBtn.classList.remove('on');}
+
+  // gallery
+  setGalPhoto(0);
+  const thumbsEl=document.getElementById('thumbs');
+  thumbsEl.innerHTML=a.photos.map((ph,i)=>`
+    <div class="thumb${i===0?' on':''}" onclick="setGalPhoto(${i})">
+      <img src="${ph}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="thumb-emoji" style="display:none">${a.e}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('date-from').value='';
+  document.getElementById('date-to').value='';
+  document.getElementById('price-calc').classList.remove('show');
+
+  openMo('mo-animal');
+}
+
+function setGalPhoto(idx){
+  if(!currentAnimal)return;
+  currentPhotoIdx=idx;
+  const img=document.getElementById('gal-img');
+  const emoji=document.getElementById('gal-emoji');
+  img.style.opacity='0';
+  img.src=currentAnimal.photos[idx]||'';
+  img.onload=()=>{img.style.opacity='1';emoji.textContent='';};
+  img.onerror=()=>{img.style.display='none';emoji.textContent=currentAnimal.e;};
+  emoji.textContent='';
+  img.style.display='block';
+  document.querySelectorAll('.thumb').forEach((t,i)=>t.classList.toggle('on',i===idx));
+}
+
+// ── PRICE CALC ────────────────────────────────────────────────────
+function calcPrice(){
+  if(!currentAnimal)return;
+  const from=document.getElementById('date-from').value;
+  const to=document.getElementById('date-to').value;
+  if(!from||!to)return;
+  const days=Math.round((new Date(to)-new Date(from))/(1000*60*60*24));
+  if(days<=0){document.getElementById('price-calc').classList.remove('show');return;}
+  const total=days*currentAnimal.priceNum;
+  const fmt=n=>n.toLocaleString('pl-PL');
+  document.getElementById('pc-days').textContent=`${days} ${days===1?'dzień':days<5?'dni':'dni'}`;
+  document.getElementById('pc-daily').textContent=currentAnimal.price;
+  document.getElementById('pc-total').textContent=`${fmt(total)} ${currentAnimal.country==='PL'?'PLN':'EUR'}`;
+  document.getElementById('price-calc').classList.add('show');
+}
+
+// ── MODAL UTILS ───────────────────────────────────────────────────
+function openMo(id){document.getElementById(id).classList.add('on');document.body.style.overflow='hidden';}
+function closeMo(id){document.getElementById(id).classList.remove('on');if(!document.querySelector('.mo.on'))document.body.style.overflow='';}
+document.querySelectorAll('.mo').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)closeMo(o.id);}));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.mo.on').forEach(m=>closeMo(m.id));});
+
+// ── TOAST ─────────────────────────────────────────────────────────
+function toast(msg,type='ok'){
+  const w=document.getElementById('toast-wrap');
+  const el=document.createElement('div');
+  el.className=`toast ${type}`;
+  el.textContent=msg;
+  w.appendChild(el);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('show')));
+  setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),320);},2400);
+}
+
+// ── SCROLL REVEAL ─────────────────────────────────────────────────
+function initReveal(){
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');obs.unobserve(e.target);}});
+  },{threshold:.08});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+}
+
+// ── NAV SCROLL ────────────────────────────────────────────────────
+function go(sec){
+  const m={browse:'s-browse',intl:'s-intl',how:'s-how',owners:'s-owners',producers:'s-producers'};
+  document.getElementById(m[sec])?.scrollIntoView({behavior:'smooth'});
+}
+
+// ── INQUIRY SAVE ──────────────────────────────────────────────────
+async function submitInquiry(){
+  if(!currentAnimal) return;
+
+  const contactName=(document.getElementById('contact-name')?.value||'').trim();
+  const contactEmail=(document.getElementById('contact-email')?.value||'').trim();
+  const contactPhone=(document.getElementById('contact-phone')?.value||'').trim();
+
+  if(!contactName||!contactEmail){
+    toast('Podaj imię i adres e-mail','fav');
+    return;
+  }
+  const emailRx=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if(!emailRx.test(contactEmail)){
+    toast('Podaj prawidłowy e-mail','fav');
+    return;
+  }
+
+  const btn=document.getElementById('bsub-btn');
+  btn.disabled=true;
+  btn.textContent='Wysyłam…';
+
+  try {
+    const resp=await fetch('/api/inquiries',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        animal_name: currentAnimal.n,
+        animal_species: currentAnimal.sp,
+        animal_location: currentAnimal.loc,
+        price_day: currentAnimal.price,
+        date_from: document.getElementById('date-from').value||null,
+        date_to: document.getElementById('date-to').value||null,
+        production_type: document.getElementById('prod-type')?.value||null,
+        notes: document.getElementById('prod-notes')?.value||null,
+        contact_name: contactName,
+        contact_email: contactEmail,
+        contact_phone: contactPhone||null,
+      }),
+    });
+    const data=await resp.json();
+    if(!resp.ok) throw new Error(data.error||'Błąd serwera');
+    toast(`✅ Zapytanie o ${currentAnimal.n} wysłane!`,'ok');
+    openMo('mo-ok');
+    document.getElementById('contact-name').value='';
+    document.getElementById('contact-email').value='';
+    document.getElementById('contact-phone').value='';
+    document.getElementById('prod-notes').value='';
+  } catch(e){
+    toast('Błąd: '+e.message,'fav');
+  } finally {
+    btn.disabled=false;
+    btn.textContent='Wyślij zapytanie →';
+  }
+}
+
+// ── SYNC HERO → FILTER BAR ────────────────────────────────────────
+function syncHero(){
+  const sc=document.getElementById('sc').value;
+  if(sc) document.getElementById('fcountry').value=sc;
+  // sync text query is automatic (both read from #sq)
+}
+
+// ── AI SEARCH ─────────────────────────────────────────────────────
+let aiActive=false;
+const CAT_KEYS={
+  psy:['pies','psy','psa','psem','owczarek','retriever','labrador','buldog','jamnik','husky','border','pudel','spaniel','york'],
+  konie:['koń','konie','konia','koniem','klacz','ogier','lipizzan','arabski','mustang'],
+  dzikie:['lew','lion','tygrys','gepard','pantera','jaguar','lampart','puma','ryś','ocelot','dziki kot','duży kot','wielki kot','big cat'],
+  ptaki:['ptak','ptaki','orzeł','bielik','ara','papuga','sokół','jastrząb','sowa','tukan','kakadu','flaming'],
+  gady:['gad','wąż','krokodyl','jaszczurka','iguana','kameleon','pyton','boa'],
+  morskie:['delfin','delfiny','morskie','ocean','morze','foka','lew morski','rekin','ośmiornica'],
+  koty:['kot','koty','kota','kotem','perski','maine coon','mainecoon','europejski','dachowiec','syjamski','angora','sfinks','ryś domowy','kociak','kotka','kocia'],
+  inne:['niedźwiedź','niedźwiedzia','słoń','słonie','wilk','wilki','żyrafa','hipopotam','goryl','szympans','lemur'],
+};
+const COUNTRY_KEYS={
+  PL:['polsk','polska','pl','warszawa','kraków','wrocław','gdańsk','poznań','zakopane','w polsce','krajow','krajowy'],
+  CZ:['czeski','czechy','czech','praga','praha','brno','czesc'],
+  AT:['austria','austriack','wiedeń','wien','au'],
+  DE:['niemcy','niemiec','berlin','münchen','niemiec','DE','za granicą','zagranicz'],
+  SK:['słowacja','słowack','bratysława'],
+};
+
+function aiSearch(){
+  const q=(document.getElementById('ai-q').value||'').trim();
+  if(!q){toast('Wpisz zapytanie','fav');return;}
+  const btn=document.getElementById('ai-btn');
+  btn.textContent='⏳ Analizuję...';btn.classList.add('loading');
+
+  setTimeout(()=>{
+    const r=parseAiQuery(q.toLowerCase());
+    applyAiResult(r,q);
+    btn.innerHTML='🤖 Szukaj AI';btn.classList.remove('loading');
+  },900);
+}
+
+function parseAiQuery(q){
+  const res={cats:[],country:'',priceT:'',avail:null};
+
+  // categories
+  for(const [cat,kws] of Object.entries(CAT_KEYS)){
+    if(kws.some(kw=>q.includes(kw))) res.cats.push(cat);
+  }
+
+  // country
+  for(const [cc,kws] of Object.entries(COUNTRY_KEYS)){
+    if(kws.some(kw=>q.includes(kw))){res.country=cc;break;}
+  }
+
+  // price
+  if(/tani|budżet|niedrog|ekonom|do 800|najtani/.test(q)) res.priceT='low';
+  else if(/premium|luksus|drogi|ekskluzyw|high-end|high end/.test(q)) res.priceT='high';
+  else if(/średni|mid|umiarkowan/.test(q)) res.priceT='mid';
+
+  // availability
+  if(/dostępn|wolny|teraz|dziś|wolne/.test(q)) res.avail=true;
+
+  return res;
+}
+
+function applyAiResult(r,rawQ){
+  aiActive=true;
+
+  // Match animals using parsed criteria (hard match)
+  aiMatchedIds=new Set();
+  A.forEach(a=>{
+    if(r.cats.length>0&&!r.cats.includes(a.cat))return;
+    if(r.country&&a.country!==r.country)return;
+    if(r.priceT&&a.priceT!==r.priceT)return;
+    if(r.avail===true&&!a.avail)return;
+    aiMatchedIds.add(a.id);
+  });
+
+  // Relax: if zero matches drop price constraint, then country
+  if(aiMatchedIds.size===0){
+    A.forEach(a=>{
+      if(r.cats.length>0&&!r.cats.includes(a.cat))return;
+      if(r.country&&a.country!==r.country)return;
+      aiMatchedIds.add(a.id);
+    });
+  }
+  if(aiMatchedIds.size===0){
+    A.forEach(a=>{
+      if(r.cats.length>0&&!r.cats.includes(a.cat))return;
+      aiMatchedIds.add(a.id);
+    });
+  }
+
+  // Reset manual filters so all cards are visible (AI handles sorting)
+  activeCat='all';
+  document.querySelectorAll('.cat').forEach(c=>c.classList.toggle('on',c.dataset.f==='all'));
+  document.getElementById('fcountry').value='';
+  document.getElementById('sc').value='';
+  document.getElementById('fprice').value='';
+
+  render();
+
+  // Build explanation
+  const cnt=aiMatchedIds.size;
+  const COUNTRIES={PL:'Polska',CZ:'Czechy',AT:'Austria',DE:'Niemcy',SK:'Słowacja'};
+  const CAT_PL={psy:'psy',koty:'koty',konie:'konie',dzikie:'dzikie koty',ptaki:'ptaki',gady:'gady',morskie:'morskie',inne:'egzotyczne'};
+  let parts=[];
+  if(r.cats.length) parts.push(`gatunek: <strong>${r.cats.map(c=>CAT_PL[c]||c).join(', ')}</strong>`);
+  if(r.country) parts.push(`kraj: <strong>${COUNTRIES[r.country]||r.country}</strong>`);
+  if(r.priceT) parts.push(`budżet: <strong>${r.priceT==='low'?'do 800 PLN':r.priceT==='mid'?'800–3 000 PLN':'premium 3 000+'}</strong>`);
+  if(r.avail) parts.push('tylko dostępne');
+
+  let txt=`Przeszukałem bazę ${A.length} zwierząt dla zapytania <em>"${rawQ}"</em>.`;
+  if(parts.length) txt+=`<br>Rozpoznałem: ${parts.join(' · ')}.`;
+  txt+=`<br><strong style="color:var(--gold-l)">Znalazłem ${cnt} pasujących zwierząt</strong> — podświetlam je poniżej.`;
+  if(cnt===0) txt+='<br><span style="color:#ff8c42">Brak wyników. Spróbuj szerszego zapytania.</span>';
+
+  document.getElementById('ai-text').innerHTML=txt;
+  document.getElementById('ai-result').classList.add('show');
+}
+
+function aiClear(){
+  aiActive=false;
+  aiMatchedIds=new Set();
+  activeCat='all';
+  document.querySelectorAll('.cat').forEach(c=>c.classList.toggle('on',c.dataset.f==='all'));
+  document.getElementById('fcountry').value='';
+  document.getElementById('sc').value='';
+  document.getElementById('fprice').value='';
+  document.getElementById('ai-q').value='';
+  document.getElementById('ai-result').classList.remove('show');
+  render();
+}
+
+// ── INIT ──────────────────────────────────────────────────────────
+updateFavBadge();
+render();
+</script>
+</body>
+</html>
