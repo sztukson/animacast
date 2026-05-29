@@ -284,23 +284,40 @@ footer ul a:hover{color:var(--text)}
 #mobile-menu .btn{width:260px;justify-content:center;font-size:15px;padding:14px}
 @media(max-width:900px){
   nav ul{display:none}
-  nav{padding:0 20px}
+  nav{padding:0 16px}
+  .nav-cta{display:none}
   .hamburger{display:flex}
-  .hero{padding:100px 20px 60px}
-  .search-box{flex-direction:column}
+  .hero{padding:90px 20px 52px}
+  .hero-sub{font-size:15px}
+  .search-box{flex-direction:column;border-radius:12px}
   .sdiv{width:100%;height:1px;margin:0}
-  .sec{padding:48px 20px}
-  .grid{grid-template-columns:repeat(2,1fr)}
+  .sbtn{width:100%;border-radius:8px;margin:4px 0 4px}
+  .sec{padding:40px 20px}
+  .sec-h{flex-direction:column;align-items:flex-start;gap:10px}
+  .grid{grid-template-columns:repeat(2,1fr);gap:14px}
   .adg{grid-template-columns:1fr}
-  .steps{grid-template-columns:repeat(2,1fr)}
+  .steps{grid-template-columns:repeat(2,1fr);gap:12px}
   .pgrid{grid-template-columns:1fr}
-  .intl{grid-template-columns:1fr}
-  footer{grid-template-columns:1fr 1fr}
-  .stats{gap:24px;flex-wrap:wrap;justify-content:center}
+  .intl{grid-template-columns:1fr;padding:28px 20px;gap:28px}
+  footer{grid-template-columns:1fr 1fr;padding:32px 20px;gap:24px}
+  .stats{gap:16px;flex-wrap:wrap;justify-content:center}
+  .modal{border-radius:16px 16px 0 0;max-height:95vh;margin-top:auto}
+  .mo{align-items:flex-end}
+  .vs-head,.vs-row{grid-template-columns:1.5fr 1fr 1fr;font-size:12px}
+  .vs-feat{font-size:12px}
+  .risk-box{grid-template-columns:1fr;gap:8px}
+  .risk-icon{font-size:24px}
 }
 @media(max-width:520px){
   .grid{grid-template-columns:1fr}
-  footer{grid-template-columns:1fr}
+  .steps{grid-template-columns:1fr}
+  footer{grid-template-columns:1fr;gap:20px}
+  h1{letter-spacing:-1px}
+  .pgrid{gap:12px}
+  .bpanel{padding:16px}
+  .vs-head,.vs-row{grid-template-columns:1fr;gap:0}
+  .vs-head div:not(:first-child),.vs-row div:not(:first-child){display:none}
+  .vs-head div:first-child,.vs-row div:first-child{border-bottom:1px solid var(--border);padding:10px 14px;font-weight:700}
 }
 </style>
 </head>
