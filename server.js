@@ -7,7 +7,7 @@ const { Pool } = require('pg');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'sztukjakub@gmail.com';
+const ALLOWED_EMAIL = process.env.ADMIN_EMAIL || 'sztukjakub@gmail.com';
 const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
 // ── PostgreSQL ──────────────────────────────────────────────────────
@@ -46,7 +46,7 @@ passport.use(new GoogleStrategy({
   callbackURL: `${BASE_URL}/auth/google/callback`,
 }, (accessToken, refreshToken, profile, done) => {
   const email = profile.emails?.[0]?.value;
-  if (email === ADMIN_EMAIL) {
+  if (email === ALLOWED_EMAIL) {
     return done(null, { email, name: profile.displayName });
   }
   return done(null, false);
@@ -56,6 +56,7 @@ passport.serializeUser((user, done) => done(null, user));
 passport.deserializeUser((user, done) => done(null, user));
 
 app.set('trust proxy', 1);
+
 app.use(express.json());
 
 app.use(session({
@@ -72,13 +73,15 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-function requireAdmin(req, res, next) {
+// ── Auth middleware ─────────────────────────────────────────────────
+
+function requireAuth(req, res, next) {
   if (req.isAuthenticated()) return next();
-  if (req.path.startsWith('/api/admin/')) return res.status(401).json({ error: 'Unauthorized' });
+  if (req.path.startsWith('/api/')) return res.status(401).json({ error: 'Unauthorized' });
   res.redirect('/login');
 }
 
-// ── Auth routes ─────────────────────────────────────────────────────
+// ── Public routes (bez logowania) ──────────────────────────────────
 
 app.get('/login', (req, res) => {
   const error = req.query.error;
@@ -87,14 +90,13 @@ app.get('/login', (req, res) => {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AnimaCast — Panel Admina</title>
+<title>AnimaCast — logowanie</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0b;color:#e2e8f0;min-height:100vh;display:flex;align-items:center;justify-content:center}
-  .card{background:#111;border:1px solid #222;border-radius:16px;padding:48px 40px;width:100%;max-width:380px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6)}
-  .logo{font-size:26px;font-weight:800;margin-bottom:6px}
-  .logo span{color:#c8903a}
-  p{font-size:13px;color:#666;margin-bottom:32px}
+  .card{background:#111;border:1px solid #1e1e1e;border-radius:16px;padding:48px 40px;width:100%;max-width:380px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+  .logo{font-size:26px;font-weight:800;margin-bottom:6px}.logo span{color:#c8903a}
+  p{font-size:13px;color:#555;margin-bottom:32px}
   .btn-google{display:flex;align-items:center;justify-content:center;gap:12px;background:#fff;color:#1e293b;border:none;border-radius:10px;padding:13px 20px;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;transition:opacity .15s;width:100%}
   .btn-google:hover{opacity:.9}
   .error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#fca5a5;border-radius:8px;padding:10px 14px;font-size:12px;margin-bottom:20px}
@@ -103,7 +105,7 @@ app.get('/login', (req, res) => {
 <body>
 <div class="card">
   <div class="logo">Anima<span>Cast</span></div>
-  <p>Panel administracyjny</p>
+  <p>Strona w przygotowaniu — dostęp dla autoryzowanych</p>
   ${error ? '<div class="error">Brak dostępu. Tylko autoryzowane konto.</div>' : ''}
   <a href="/auth/google" class="btn-google">
     <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 6.293C4.672 4.166 6.656 3.58 9 3.58z"/></svg>
@@ -120,40 +122,20 @@ app.get('/auth/google',
 
 app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/login?error=1' }),
-  (req, res) => {
-    const dest = req.session.returnTo || '/';
-    delete req.session.returnTo;
-    res.redirect(dest);
-  }
+  (req, res) => res.redirect('/')
 );
 
 app.get('/logout', (req, res) => {
   req.logout(() => res.redirect('/login'));
 });
 
-// ── Tymczasowa ochrona HTTP Basic Auth ───────────────────────────
-// Żeby wyłączyć: usuń SITE_PASSWORD z Railway Variables — gotowe.
+// ── Wszystkie poniższe routes wymagają logowania ────────────────────
 
-app.use((req, res, next) => {
-  const pwd = process.env.SITE_PASSWORD;
-  if (!pwd) return next();
-  if (req.path.startsWith('/auth/') || req.path.startsWith('/admin') || req.path.startsWith('/login')) return next();
+app.use(requireAuth);
 
-  const auth = req.headers['authorization'];
-  if (auth && auth.startsWith('Basic ')) {
-    const decoded = Buffer.from(auth.slice(6), 'base64').toString();
-    const colon = decoded.indexOf(':');
-    const pass = decoded.slice(colon + 1);
-    if (pass === pwd) return next();
-  }
+// ── API ─────────────────────────────────────────────────────────────
 
-  res.setHeader('WWW-Authenticate', 'Basic realm="AnimaCast — strona w przygotowaniu"');
-  res.status(401).send('Wymagane hasło dostępu.');
-});
-
-// ── Public API ──────────────────────────────────────────────────────
-
-// POST /api/inquiries — submit a booking inquiry (public)
+// POST /api/inquiries — wyślij zapytanie
 app.post('/api/inquiries', async (req, res) => {
   const {
     animal_name, animal_species, animal_location, price_day,
@@ -190,14 +172,13 @@ app.post('/api/inquiries', async (req, res) => {
   }
 });
 
-// ── Admin routes ────────────────────────────────────────────────────
-
-app.get('/admin', requireAdmin, (req, res) => {
+// GET /admin — panel admina
+app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
-// GET /api/admin/inquiries — list all inquiries
-app.get('/api/admin/inquiries', requireAdmin, async (req, res) => {
+// GET /api/admin/inquiries — lista zapytań
+app.get('/api/admin/inquiries', async (req, res) => {
   try {
     const { status } = req.query;
     let q = 'SELECT * FROM inquiries';
@@ -215,8 +196,8 @@ app.get('/api/admin/inquiries', requireAdmin, async (req, res) => {
   }
 });
 
-// PATCH /api/admin/inquiries/:id — update status
-app.patch('/api/admin/inquiries/:id', requireAdmin, async (req, res) => {
+// PATCH /api/admin/inquiries/:id — zmień status
+app.patch('/api/admin/inquiries/:id', async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
   const allowed = ['nowe', 'w_realizacji', 'zakonczone', 'odrzucone'];
@@ -230,8 +211,8 @@ app.patch('/api/admin/inquiries/:id', requireAdmin, async (req, res) => {
   }
 });
 
-// GET /api/admin/stats — dashboard stats
-app.get('/api/admin/stats', requireAdmin, async (req, res) => {
+// GET /api/admin/stats
+app.get('/api/admin/stats', async (req, res) => {
   try {
     const { rows } = await db.query(`
       SELECT
