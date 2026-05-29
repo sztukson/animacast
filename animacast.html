@@ -270,9 +270,22 @@ footer ul a:hover{color:var(--text)}
 .risk-title{font-size:14px;font-weight:800;margin-bottom:5px}
 .risk-desc{color:var(--muted);font-size:13px;line-height:1.65}
 
+.hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;background:none;border:none;cursor:pointer;padding:8px;z-index:201}
+.hamburger span{display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all .3s}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+#mobile-menu{display:none;position:fixed;inset:0;background:rgba(8,9,16,.98);z-index:200;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+#mobile-menu.open{display:flex}
+#mobile-menu a{color:var(--text);text-decoration:none;font-size:22px;font-weight:700;padding:14px 32px;border-radius:12px;cursor:pointer;transition:background .2s;width:260px;text-align:center}
+#mobile-menu a:hover{background:rgba(255,255,255,.06)}
+#mobile-menu .mob-gold{color:var(--gold-l)}
+#mobile-menu .mob-sep{width:40px;height:1px;background:var(--border);margin:8px 0}
+#mobile-menu .btn{width:260px;justify-content:center;font-size:15px;padding:14px}
 @media(max-width:900px){
   nav ul{display:none}
   nav{padding:0 20px}
+  .hamburger{display:flex}
   .hero{padding:100px 20px 60px}
   .search-box{flex-direction:column}
   .sdiv{width:100%;height:1px;margin:0}
@@ -307,7 +320,20 @@ footer ul a:hover{color:var(--text)}
     <button class="btn btn-o">Zaloguj się</button>
     <button class="btn btn-g" onclick="go('owners')">Dodaj zwierzę +</button>
   </div>
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+
+<div id="mobile-menu">
+  <a onclick="menuGo('browse')">Przeglądaj</a>
+  <a onclick="menuGo('intl')">Zagranica</a>
+  <a onclick="menuGo('how')">Jak działa</a>
+  <a onclick="menuGo('owners')">Dla właścicieli</a>
+  <a onclick="menuGo('producers')" class="mob-gold">Dla producentów</a>
+  <div class="mob-sep"></div>
+  <button class="btn btn-g" onclick="menuGo('owners')">Dodaj zwierzę +</button>
+</div>
 
 <!-- HERO -->
 <section class="hero" id="s-home">
@@ -1354,6 +1380,19 @@ function aiClear(){
   document.getElementById('ai-q').value='';
   document.getElementById('ai-result').classList.remove('show');
   render();
+}
+
+// ── HAMBURGER MENU ────────────────────────────────────────────────
+function toggleMenu(){
+  const hb=document.getElementById('hamburger');
+  const mn=document.getElementById('mobile-menu');
+  hb.classList.toggle('open');
+  mn.classList.toggle('open');
+  document.body.style.overflow=mn.classList.contains('open')?'hidden':'';
+}
+function menuGo(sec){
+  toggleMenu();
+  setTimeout(()=>go(sec),300);
 }
 
 // ── INIT ──────────────────────────────────────────────────────────
